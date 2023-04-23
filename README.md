@@ -2,6 +2,9 @@
 
 This is a web based VCS, project management and collaboration tool. GitHub's twin brother.
 
+## Model
+Current version of class diagram can be viewed at: [https://app.diagrams.net/](https://app.diagrams.net/)
+
 ## Setup:
 
 ### Clone repo:
