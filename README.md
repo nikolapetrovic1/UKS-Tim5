@@ -7,14 +7,7 @@ Current version of class diagram can be viewed at: [https://app.diagrams.net/](h
 
 ## Setup:
 
-### Clone repo:
-
-```
-git clone https://github.com/JSTheGreat/UKS-Tim5.git
-cd UKS-Tim5
-```
-
-### Create venv:
+### Create venv (outside of project):
 
 ```python
 # Create virtual environment
@@ -22,6 +15,13 @@ python -m venv venv
 
 # Start virtual environment
 .\venv\Scripts\activate
+```
+
+### Clone repo:
+
+```
+git clone https://github.com/JSTheGreat/UKS-Tim5
+cd UKS-Tim5
 ```
 
 ### Run with docker:
@@ -39,4 +39,42 @@ docker-compose up --build
 docker-compose up --build --force-recreate
 ```
 
-App will be running on [http://localhost:8083/](http://localhost:8083/), but only after you try to enter [http://localhost:8001/](http://localhost:8001/) or else NgInx will throw 502 Bad Gateway error.
+App will be running on [http://localhost:8083/](http://localhost:8083/), but you may need to wait a couple of seconds for it to start
+
+
+## Monitoring Containers Separately
+
+### Access to PostgreSQL DB
+
+The following command can be used to investigate the PostgreSQL db.
+
+```python
+# enter the container
+docker exec -it uks_tim5_db bash
+# authenticate as pg user (enter password)
+psql -h localhost -p 5432 -U postgres -W
+# listing tables 
+\d 
+# see the content of an arbitraty table
+SELECT * FROM "public"."GitApp_repository";
+```
+
+### Access to Redis mem-cache
+
+To investigate the content of Redis mem-cache, execute the following commands:
+
+```python
+# enter redi container
+docker exec -it uks_tim5_redis bash
+# use redis-cli to inspect
+redis-cli
+# check cache size
+dbsize
+# list all keys
+keys *
+# flush all cached keys
+FLUSHALL
+```
+
+Note: cache may need to be removed manually from browser as well.
+

@@ -1,6 +1,6 @@
 cd UKS_Git_Site
 # uncomment this to use sqlite as test db
-export UKS_TEST_DB=ON
+#export UKS_TEST_DB=ON
 # collect static files and put inside ./static/
 python3 manage.py collectstatic --noinput
 # setup db
