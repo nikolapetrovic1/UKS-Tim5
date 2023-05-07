@@ -41,9 +41,10 @@ docker-compose up --build --force-recreate
 
 App will be running on [http://localhost:8083/](http://localhost:8083/), but you may need to wait a couple of seconds for it to start
 
-##Monitoring Containers Separately
 
-###Access to PostgreSQL DB
+## Monitoring Containers Separately
+
+### Access to PostgreSQL DB
 
 The following command can be used to investigate the PostgreSQL db.
 
@@ -58,7 +59,7 @@ psql -h localhost -p 5432 -U postgres -W
 SELECT * FROM "public"."GitApp_repository";
 ```
 
-###Access to Redis mem-cache
+### Access to Redis mem-cache
 
 To investigate the content of Redis mem-cache, execute the following commands:
 
