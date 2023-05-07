@@ -159,7 +159,7 @@ else:
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient"
             },
-            "KEY_PREFIX": "uks"
+            "KEY_PREFIX": "uks-tim5"
         }
     }
 
