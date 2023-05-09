@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
           context: .
           file: docker-compose.yml
@@ -30,11 +30,6 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/uks-tim5:latest
 
       - name: Deploy Docker image to environment
-        uses: docker/compose-action@1.2.1
+        uses: docker/metadata-action@v3
         with:
-          compose-file: docker-compose.yml
-          project-name: uks-tim5
-          log-driver: 'json-file'
-          log-opt: |
-            max-size=10m
-            max-file=3
+          images: ${{ secrets.DOCKER_USERNAME }}/uks-tim5:latest
