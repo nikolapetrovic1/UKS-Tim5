@@ -30,7 +30,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/uks-tim5:latest
 
       - name: Deploy Docker image to environment
-        uses: docker/compose-action@1.2.1
+        uses: docker/metadata-action@v3
         with:
           compose-file: ./docker-compose.yml
           project-name: uks-tim5
