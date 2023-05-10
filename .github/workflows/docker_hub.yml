@@ -30,10 +30,3 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Deploy Docker image to environment
-        uses: docker/metadata-action@v3
-        with:
-          compose-file: ./docker-compose.yml
-          project-name: uks-tim5
-          environment: production
