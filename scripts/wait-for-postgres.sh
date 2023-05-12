@@ -21,4 +21,4 @@ done
 # Start app
 >&2 echo "Postgres is up - executing command"
 
-./scripts/start-django.sh
+start-django.sh
