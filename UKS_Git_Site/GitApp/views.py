@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Repository
+from .models import Repository, User
 
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 import redis
+from django.template import loader
+
 
 # Create your views here.
 from django.http import HttpResponse
@@ -26,3 +28,9 @@ def cached_initial(request):
 def single_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     return HttpResponse("You're looking at repository %s." % repo.name)
+
+def profile_page(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    template = loader.get_template('profile_page.html')
+    context = {'user': user, 'stars': user.stars.all()}
+    return HttpResponse(template.render(context,request))
