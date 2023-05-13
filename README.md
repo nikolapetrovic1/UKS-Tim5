@@ -29,6 +29,11 @@ cd UKS-Tim5
 You will need docker installed on your machine and set to run on Linux containers.
 
 ```python
+# This image should be pulled before (re)creating the containers (below)
+docker pull jsthegreat/uks-tim5
+```
+
+```python
 # To setup the environment and run the Django app, execute the following command:
 docker-compose up
 

@@ -20,7 +20,6 @@ RUN pip install --upgrade setuptools
 RUN pip install -r requirements.txt
 
 # Copy the rest of the application code to the container
-COPY . /app/
 
 COPY ./scripts/wait-for-postgres.sh /usr/local/bin/wait-for-postgres.sh
 RUN chmod +x /usr/local/bin/wait-for-postgres.sh
@@ -31,5 +30,8 @@ CMD ["wait-for-postgres.sh"]
 
 COPY ./scripts/start-django.sh /usr/local/bin/start-django.sh
 RUN chmod +x /usr/local/bin/start-django.sh
+RUN dos2unix /usr/local/bin/start-django.sh
 
 CMD ["start-django.sh"]
+
+COPY . /app/
