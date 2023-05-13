@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from ...models import Repository
-
+from ...models import User
 
 class Command(BaseCommand):
     # args = '<args1 args2>'
@@ -18,6 +18,19 @@ class Command(BaseCommand):
 
         r3 = Repository(id=3, name="Repo3")
         r3.save()
-
+        
+    def _add_users(self):
+        User.objects.all().delete()
+        
+        u1 = User(id=1,name="User1")
+        u1.save()
+        
+        u2 = User(id=2,name="User2")
+        u2.save()
+        
+        u3 = User(id=3,name="User3")
+        u3.save()
+    
     def handle(self, *args, **options):
         self._add_repositories()
+        self._add_users()
