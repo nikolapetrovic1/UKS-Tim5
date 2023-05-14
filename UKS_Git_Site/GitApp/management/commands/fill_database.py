@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from ...models import Repository
-from ...models import User
+from ...models import CustomUser
 
 class Command(BaseCommand):
     # args = '<args1 args2>'
@@ -20,17 +20,14 @@ class Command(BaseCommand):
         r3.save()
         
     def _add_users(self):
-        User.objects.all().delete()
-        
-        u1 = User(id=1,name="User1")
-        u1.save()
-        
-        u2 = User(id=2,name="User2")
-        u2.save()
-        
-        u3 = User(id=3,name="User3")
-        u3.save()
-    
+        CustomUser.objects.all().delete()
+
+        CustomUser.objects.create_superuser("admin", "admin@mailinator.com", "admin")
+
+        CustomUser.objects.create_user("user1", "user1@mailinator.com", "user1")
+        CustomUser.objects.create_user("user2", "user2@mailinator.com", "user2")
+
+
     def handle(self, *args, **options):
-        self._add_repositories()
+        # self._add_repositories()
         self._add_users()

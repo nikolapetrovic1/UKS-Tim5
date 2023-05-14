@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'GitApp.apps.GitappConfig',
+    'GitApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -84,6 +84,8 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+AUTH_USER_MODEL = "GitApp.CustomUser" 
 
 
 # Password validation

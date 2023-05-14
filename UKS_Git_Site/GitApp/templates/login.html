@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style-login.css' %}"/>
+    <title>{{ title }}</title>
+
+</head>
+<body>
+
+<h2>Login Form</h2>
+
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+
+    <div class="container">
+        <label for="uname"><b>Korisnicko ime</b></label>
+        <input type="text" placeholder="Unesite korisnicko ime" name="username" required>
+
+        <label for="psw"><b>Lozinka</b></label>
+        <input type="password" placeholder="Unesite lozinku" name="password" required>
+
+        <button type="submit">Prijavi se</button>
+        {% if greska_login %}
+        <label>
+            <span class="err">Neispravni kredencijali</span>
+        </label>
+        {% endif %}
+    </div>
+
+</form>
+
+</body>
+</html>
