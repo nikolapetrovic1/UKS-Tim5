@@ -10,25 +10,25 @@ class Command(BaseCommand):
     def _add_repositories(self):
         Repository.objects.all().delete()
 
-        r1 = Repository(id=1, name="Repo1")
+        r1 = Repository(id=1, name="Repo1", contributors="User1")
         r1.save()
 
-        r2 = Repository(id=2, name="Repo2")
+        r2 = Repository(id=2, name="Repo2", contributors="User1")
         r2.save()
 
-        r3 = Repository(id=3, name="Repo3")
+        r3 = Repository(id=3, name="Repo3", contributors="User1")
         r3.save()
         
     def _add_users(self):
         User.objects.all().delete()
         
-        u1 = User(id=1,name="User1")
+        u1 = User(id=1, name="User1")
         u1.save()
-        
-        u2 = User(id=2,name="User2")
+
+        u2 = User(id=2, name="User2")
         u2.save()
-        
-        u3 = User(id=3,name="User3")
+
+        u3 = User(id=3, name="User3")
         u3.save()
     
     def handle(self, *args, **options):

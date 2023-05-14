@@ -8,12 +8,12 @@ class User(models.Model):
     role = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.username
+        return self.name
 
 
 class Repository(models.Model):
     name = models.CharField(max_length=200)
-    #contributors = models.ForeignKey(User, on_delete=models.CASCADE)   // to remove comment when data is added to database
+    contributors = models.CharField(max_length=200)   # to remove comment when data is added to database
 
     def __str__(self):
         return self.name
