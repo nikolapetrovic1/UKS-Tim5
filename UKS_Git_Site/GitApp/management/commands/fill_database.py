@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from ...models import Repository
-from ...models import CustomUser
+from ...models import User
 
 class Command(BaseCommand):
     # args = '<args1 args2>'
@@ -21,8 +21,8 @@ class Command(BaseCommand):
         r3.save()
         
     def _add_users(self):
-        CustomUser.objects.all().delete()
-        content_type = ContentType.objects.get_for_model(CustomUser)
+        User.objects.all().delete()
+        content_type = ContentType.objects.get_for_model(User)
         # get_or_create koristimo za slucaj da postoji
         permission, _ = Permission.objects.get_or_create(
             codename='test_access',
@@ -35,12 +35,12 @@ class Command(BaseCommand):
         group.permissions.add(permission)
         
         # kreiranje jos jednog korisnika koji nije u grupi, te nema permisije
-        CustomUser.objects.create_superuser("admin", "admin@mailinator.com", "admin")
+        User.objects.create_superuser("admin", "admin@mailinator.com", "admin")
 
-        user1 = CustomUser.objects.create_user("user1", "user1@mailinator.com", "user1")
+        user1 = User.objects.create_user("user1", "user1@mailinator.com", "user1")
         user1.groups.add(group)
-        user1.user_permissions.add(permission)
-        CustomUser.objects.create_user("user2", "user2@mailinator.com", "user2")
+        # user1.user_permissions.add(permission)
+        User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
 
     def handle(self, *args, **options):

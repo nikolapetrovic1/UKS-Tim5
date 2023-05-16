@@ -85,7 +85,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "GitApp.CustomUser" 
+AUTH_USER_MODEL = "GitApp.User" 
 
 LOGIN_URL = 'login'
 # Password validation
