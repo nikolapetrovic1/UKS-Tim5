@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% load static %}
-    <title>Initial index</title>
-</head>
-<body>
-    <p>Access page<p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>User Details</h1>
+    <h2>Id: {{object.id}}</h2>
+    <p>Username: {{ object.username }}</p>
+
+    <form action="{% url 'delete_user' %}">
+     <button type="submit">Delete account</button>
+    </form>
+{% endblock %}
