@@ -2,10 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 from .models import User
 
 
@@ -53,3 +52,32 @@ def user_logout(request):
         logout(request)
         return redirect('index')
     raise PermissionDenied()
+
+
+class UserForm(UserCreationForm):
+    class Meta:
+        model = User 
+        fields = ["first_name","last_name","username"]
+
+	# def save(self, commit=True):
+	# 	user = super(NewUserForm, self).save(commit=False)
+	# 	user.email = self.cleaned_data['email']
+	# 	if commit:
+	# 		user.save()
+	# 	return user
+
+def user_register(request,template_name='user_form.html'):
+    form = UserForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('login')
+    return render(request,template_name,{'form':form})
+
+login_required()
+def user_update(request, template_name='user_form.html'):
+    user = get_object_or_404(User, pk=request.user.id)
+    form = UserForm(request.POST or None, instance=user)
+    if form.is_valid():
+        form.save()
+        return redirect('user_profile')
+    return render(request, template_name, {'form':form})
