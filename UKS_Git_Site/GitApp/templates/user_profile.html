@@ -4,8 +4,10 @@
     <h1>User Details</h1>
     <h2>Id: {{object.id}}</h2>
     <p>Username: {{ object.username }}</p>
-
+    {% comment %} {% include "user_form.html" %}     {% endcomment %}
     <form action="{% url 'delete_user' %}">
      <button type="submit">Delete account</button>
     </form>
+    <button onclick="location.href = '/change_password'">Change password</button>
+
 {% endblock %}
