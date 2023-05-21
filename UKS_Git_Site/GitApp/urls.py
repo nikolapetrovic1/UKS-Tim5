@@ -11,8 +11,6 @@ urlpatterns = [
     path("test/",user_view.test,name="test"),
     path("profile/",user_view.user_profile,name="user_profile"),
     path("register/",user_view.user_register,name="user_register"),
-    # path("user/update",user_view.user_update,name="user_update"),
+    path("edit_profile",user_view.user_update,name="user_update"),
     path("change_password",user_view.user_change_password,name="change_password")
-
-
 ]

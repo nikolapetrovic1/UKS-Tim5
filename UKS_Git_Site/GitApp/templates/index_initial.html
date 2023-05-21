@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    {% load static %}
-    <title>Initial index</title>
-  </head>
-  <body>
+{%  extends "base.html" %}
+
+{% block content %}
+
     <p>Hello, world. You're at the polls index.</p>
     <br /><br />
     <ul>
@@ -15,5 +11,5 @@
       <li><a href="{% url 'user_profile'  %}">Profile</a></li>
     </ul>
     <a href="{% url 'test'  %}">Test acess(works for user1)</a>
-  </body>
-</html>
+
+{% endblock %}

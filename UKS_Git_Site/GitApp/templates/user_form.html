@@ -1,10 +1,8 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} 
 
-{% comment %} {% extends "base.html" %} {% endcomment %}
 
-{% block content %}
-<h1>User</h1>
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit" />
-</form>
+
+{% block content %} 
+    {%crispy form %}
+    <button onclick="location.href = '/change_password'">Change password</button>
 {% endblock %}
