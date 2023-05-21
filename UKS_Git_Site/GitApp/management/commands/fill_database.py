@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
 from ...models import Repository
 from ...models import User
 
@@ -21,16 +22,27 @@ class Command(BaseCommand):
         
     def _add_users(self):
         User.objects.all().delete()
+        content_type = ContentType.objects.get_for_model(User)
+        # get_or_create koristimo za slucaj da postoji
+        permission, _ = Permission.objects.get_or_create(
+            codename='test_access',
+            name='Test access',
+            content_type=content_type,
+        )
+        # kreiranje grupe
+        group, _ = Group.objects.get_or_create(name="test")
+
+        group.permissions.add(permission)
         
-        u1 = User(id=1, name="User1")
-        u1.save()
+        # kreiranje jos jednog korisnika koji nije u grupi, te nema permisije
+        User.objects.create_superuser("admin", "admin@mailinator.com", "admin")
 
-        u2 = User(id=2, name="User2")
-        u2.save()
+        user1 = User.objects.create_user("user1", "user1@mailinator.com", "user1")
+        user1.groups.add(group)
+        # user1.user_permissions.add(permission)
+        User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
-        u3 = User(id=3, name="User3")
-        u3.save()
-    
+
     def handle(self, *args, **options):
         self._add_repositories()
         self._add_users()

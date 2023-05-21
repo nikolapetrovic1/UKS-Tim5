@@ -6,6 +6,8 @@ from .models import User
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
+
+
 import redis
 
 # Create your views here.
