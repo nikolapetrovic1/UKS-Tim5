@@ -1,5 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from .models import Repository
+from .models import User
 
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
@@ -28,3 +30,12 @@ def cached_initial(request):
 def single_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     return HttpResponse("You're looking at repository %s." % repo.name)
+
+def add_users_to_repo(request, repository_id, user_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    user = get_object_or_404(User, id=user_id)
+
+    repo.contributors = repo.contributors + (",%s" % user)
+    repo.save()
+
+    return render(request,"add_users.html", {'repo' : repo.contributors,'user' : user})

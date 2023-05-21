@@ -6,7 +6,7 @@ class User(AbstractUser):
     
 class Repository(models.Model):
     name = models.CharField(max_length=200)
-    #contributors = models.ForeignKey(User, on_delete=models.CASCADE)   // to remove comment when data is added to database
+    contributors = models.CharField(max_length=200)   # to remove comment when data is added to database
 
     def __str__(self):
         return self.name
