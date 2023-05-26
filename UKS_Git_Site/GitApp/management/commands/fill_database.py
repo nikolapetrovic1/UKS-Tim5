@@ -1,9 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
-from ...models import Repository
-from ...models import User
-
+from ...models import User, Project, Milestone, Repository, State
+import datetime
 class Command(BaseCommand):
     # args = '<args1 args2>'
     help = 'Komanda za popunjavanje baze sa inicijalnim vrednostima'
@@ -42,7 +41,15 @@ class Command(BaseCommand):
         # user1.user_permissions.add(permission)
         User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
+    def _add_data(self):
+        Project.objects.all().delete()
+        project1 = Project(title="test")
+        project1.save()
+        Milestone.objects.all().delete()
+        milestone1 = Milestone(title="test milestone",description="test",due_date = '2024-05-26',state=State.OPEN,project= project1)
+        milestone1.save()
 
     def handle(self, *args, **options):
+        self._add_data()
         self._add_repositories()
         self._add_users()
