@@ -19,7 +19,7 @@ class Command(BaseCommand):
         r3 = Repository(id=3, name="Repo3", contributors="User1")
         r3.save()
         
-    def _add_users(self):
+    def _add_data(self):
         User.objects.all().delete()
         content_type = ContentType.objects.get_for_model(User)
         # get_or_create koristimo za slucaj da postoji
@@ -38,18 +38,16 @@ class Command(BaseCommand):
 
         user1 = User.objects.create_user("user1", "user1@mailinator.com", "user1")
         user1.groups.add(group)
-        # user1.user_permissions.add(permission)
+
         User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
-    def _add_data(self):
         Project.objects.all().delete()
-        project1 = Project(title="test")
+        project1 = Project(title="test",lead = user1)
         project1.save()
         Milestone.objects.all().delete()
-        milestone1 = Milestone(title="test milestone",description="test",due_date = '2024-05-26',state=State.OPEN,project= project1)
+        milestone1 = Milestone(title="test milestone",description="test",due_date = '2024-05-26',state=State.OPEN,project = project1)
         milestone1.save()
 
     def handle(self, *args, **options):
         self._add_data()
         self._add_repositories()
-        self._add_users()
