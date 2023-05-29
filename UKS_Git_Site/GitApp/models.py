@@ -32,7 +32,6 @@ class Repository(models.Model):
     contributors = models.CharField(
         max_length=200
     )  # to remove comment when data is added to database
-
     #TODO: project relation
     def __str__(self):
         return self.name
