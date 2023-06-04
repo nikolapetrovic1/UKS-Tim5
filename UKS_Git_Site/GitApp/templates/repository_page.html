@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{repository.name}</title>
+</head>
+<body>
+    <h2>{{repository.name}}</h2>
+    <p>You're looking at repository</p>
+    <a href="{% url 'new_star' repository.id %}"><button class="btn btn-success">Star</button></a>
+</body>
+</html>

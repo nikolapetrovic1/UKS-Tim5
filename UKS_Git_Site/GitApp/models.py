@@ -6,7 +6,6 @@ class Repository(models.Model):
 
 class Star(models.Model):
     repository = models.ForeignKey(Repository, null=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
 
 class User(models.Model):
     firstName = models.CharField(max_length=50)

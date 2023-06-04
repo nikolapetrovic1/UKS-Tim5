@@ -14,7 +14,12 @@
     <br>
     <h4>Stars</h4>
     {% for star in stars %}
-            <li>{{star.name}}&nbsp; / {{star.repository.name}}</li>
+            <li><a href="/{{star.repository.id}}">
+                {{star.repository.name}}
+            </a>
+                &nbsp; &nbsp;
+                <a  href="{% url 'delete_star' star.id %}"><button class="btn">unfollow</button></a>
+            </li>
     {% endfor %}
 </body>
 </html>
