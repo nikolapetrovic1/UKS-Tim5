@@ -1,9 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Repository, User, Star
+from django.template.loader import render_to_string
+
 
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
+
+
 import redis
 from django.template import loader
 
@@ -57,3 +61,13 @@ def delete_star(request, star_id):
     template = loader.get_template('profile_page.html')
     context = {'user': user, 'stars': user.stars.all()}
     return HttpResponse(template.render(context,request))
+    return HttpResponse("You're looking at repository %s." % repo.name)
+
+def add_users_to_repo(request, repository_id, user_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    user = get_object_or_404(User, id=user_id)
+
+    repo.contributors = repo.contributors + (",%s" % user)
+    repo.save()
+
+    return render(request,"add_users.html", {'repo' : repo.contributors,'user' : user})
