@@ -1,9 +1,7 @@
 from django.core.management.base import BaseCommand
-
-from ...models import Repository, Star, User
-
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
+from ...models import Repository, Star, User
 
 
 class Command(BaseCommand):
@@ -23,6 +21,27 @@ class Command(BaseCommand):
         r3.save()
         
     def _add_users(self):
+
+        Repository.objects.all().delete()
+
+        r1 = Repository(id=1, name="Repo1")
+        r1.save()
+
+        r2 = Repository(id=2, name="Repo2")
+        r2.save()
+
+        r3 = Repository(id=3, name="Repo3")
+        r3.save()
+
+        Star.objects.all().delete()
+
+        star1 = Star(id=1, name="Star1", repository=r1)
+        star1.save()
+
+        star2 = Star(id=2, name="Star2", repository=r2)
+        star2.save()
+
+
         User.objects.all().delete()
         content_type = ContentType.objects.get_for_model(User)
         # get_or_create koristimo za slucaj da postoji
@@ -39,28 +58,18 @@ class Command(BaseCommand):
         # kreiranje jos jednog korisnika koji nije u grupi, te nema permisije
         User.objects.create_superuser("admin", "admin@mailinator.com", "admin")
 
-        user1 = User.objects.create_user("user1", "user1@mailinator.com", "user1")
+        user1 = User.objects.create_user("user1", "user1@mailinator.com", "user1",company="FTN")
         user1.groups.add(group)
         # user1.user_permissions.add(permission)
         User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
-
-        Star.objects.all().delete()
-
-        star1 = Star(id=1, repository=r1)
-        star1.save()
-
-        star2 = Star(id=2, repository=r2)
-        star2.save()
-
-        User.objects.all().delete()
-
-        user1 = User(id=1, firstName="Nikola", lastName="Stankovic", company="FTN", location="Novi Sad")
-        user1.save()
         user1.stars.add(star1)
         user1.stars.add(star2)
         user1.save()
 
+
+
+
     def handle(self, *args, **options):
-        self._add_repositories()
         self._add_users()
+        # self._add_repositories()

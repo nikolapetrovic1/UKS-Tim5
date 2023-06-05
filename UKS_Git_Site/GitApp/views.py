@@ -7,9 +7,14 @@ from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 
+from django.contrib.auth.decorators import login_required, permission_required
 
 import redis
 from django.template import loader
+
+
+# Create your views here.
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -30,37 +35,7 @@ def cached_initial(request):
 
 
 def single_repo(request, repository_id):
-    repo = get_object_or_404(Repository, id = repository_id)
-    template = loader.get_template('repository_page.html')
-    context = {'repository': repo}
-    return HttpResponse(template.render(context, request))
-
-def profile_page(request, user_id):
-    user = get_object_or_404(User, id = user_id)
-    template = loader.get_template('profile_page.html')
-    context = {'user': user, 'stars': user.stars.all()}
-    return HttpResponse(template.render(context,request))
-
-def new_star(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    #Need logged user id
-    user = get_object_or_404(User, id=1)
-    star = Star(repository=repo)
-    star.save()
-    user.stars.add(star)
-    user.save()
-    template = loader.get_template('repository_page.html')
-    context = {'repository': repo}
-    return HttpResponse(template.render(context, request))
-
-def delete_star(request, star_id):
-    star = get_object_or_404(Star, id = star_id)
-    star.delete()
-    #Need logged user id
-    user = get_object_or_404(User, id = 1)
-    template = loader.get_template('profile_page.html')
-    context = {'user': user, 'stars': user.stars.all()}
-    return HttpResponse(template.render(context,request))
     return HttpResponse("You're looking at repository %s." % repo.name)
 
 def add_users_to_repo(request, repository_id, user_id):
@@ -70,4 +45,28 @@ def add_users_to_repo(request, repository_id, user_id):
     repo.contributors = repo.contributors + (",%s" % user)
     repo.save()
 
-    return render(request,"add_users.html", {'repo' : repo.contributors,'user' : user})
+    return render(request,"add_users.html", {'repo' : repo.contributors, 'user' : user})
+
+@login_required()
+def new_star(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    user = get_object_or_404(User, id=request.user.id)
+    star = Star(repository=repo)
+    star.save()
+    user.stars.add(star)
+    user.save()
+    template = loader.get_template('repository_page.html')
+    context = {'repository': repo}
+    return HttpResponse(template.render(context, request))
+@login_required()
+def delete_star(request, star_id):
+    star = get_object_or_404(Star, id = star_id)
+    star.delete()
+
+    user = get_object_or_404(User, id=request.user.id)
+    template = loader.get_template('user_profile.html')
+
+    context = {'user': user, 'stars': user.stars.all()}
+
+    return HttpResponse(template.render(context,request))
+
