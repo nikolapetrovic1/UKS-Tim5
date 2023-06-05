@@ -20,8 +20,7 @@ def test(request):
 @login_required()
 def user_profile(request):
     user = get_object_or_404(User, id=request.user.id)
-    form = UserUpdateForm(request.POST or None, instance=user) 
-    return render(request,'user_profile.html',{"object": user,"form": form})
+    return render(request,'user_profile.html',{"user": user,"stars": user.stars.all()})
 
 @login_required()
 def delete_user(request):

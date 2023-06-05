@@ -2,10 +2,17 @@
 
 {% block content %}
     <h1>User Details</h1>
-    <p>First Name: {{object.first_name}}</p>
-    <p>Last Name: {{object.last_name}}</p>
-    <p>Username: {{ object.username }}</p>
-    <p>Email: {{ object.email }}</p>
+    <p>First Name: {{user.first_name}}</p>
+    <p>Last Name: {{user.last_name}}</p>
+    <p>Username: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Company: {{user.company}}</p>
+    <p>Location: {{user.location}}</p>
+    <h4>Stars</h4>
+    {% for star in stars %}
+            <li>{{star.name}}&nbsp; / {{star.repository.name}}</li>
+    {% endfor %}
+
     <form action="{% url 'delete_user' %}">
      <button class="btn btn-primary" type="submit">Delete account</button>
     </form>

@@ -12,5 +12,7 @@ urlpatterns = [
     path("profile/",user_view.user_profile,name="user_profile"),
     path("register/",user_view.user_register,name="user_register"),
     path("edit_profile",user_view.user_update,name="user_update"),
-    path("change_password",user_view.user_change_password,name="change_password")
+    path("change_password",user_view.user_change_password,name="change_password"),
+    path("new_star/<int:repository_id>", views.new_star, name="new_star"),
+    path("delete_star/<int:star_id>", views.delete_star, name="delete_star"),
 ]
