@@ -35,7 +35,7 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request,user)
-            return redirect("index")
+            return redirect(request,"index")
     else:
         form = UserLoginForm(request)
         return render(request,"login.html", {"form":form})
