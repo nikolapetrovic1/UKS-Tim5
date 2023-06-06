@@ -8,7 +8,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 
 
-from .models import User
+from .models import User, Star
 
 from .forms import UserForm,UserLoginForm,UserUpdateForm
 
@@ -20,7 +20,8 @@ def test(request):
 @login_required()
 def user_profile(request):
     user = get_object_or_404(User, id=request.user.id)
-    return render(request,'user_profile.html',{"user": user,"stars": user.stars.all()})
+    stars = Star.objects.filter(user=user)
+    return render(request,'user_profile.html',{"user": user,"stars":stars})
 
 @login_required()
 def delete_user(request):
@@ -34,7 +35,9 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request,user)
-            return redirect("index")
+            return redirect(request,"index")
+        else:
+            return render(request,"login.html", {"form":form})
     else:
         form = UserLoginForm(request)
         return render(request,"login.html", {"form":form})
