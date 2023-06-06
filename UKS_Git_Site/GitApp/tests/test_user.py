@@ -2,7 +2,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .models import User
+from ..models import User
 # # Create your tests here.
 
 
