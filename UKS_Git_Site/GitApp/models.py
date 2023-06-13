@@ -13,6 +13,14 @@ class State(models.Model):
         (MERGED, "Merged"),
     ]
 
+class RepositoryState(models.Model):
+    PUBLIC = "PU"
+    PRIVATE = "PR"
+
+    STATE_CHOICES = [
+        (PUBLIC, "Public"),
+        (PRIVATE, "Private")
+    ]
     
 
 class Label(models.Model):
@@ -25,6 +33,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=200)  
 
 class Repository(models.Model):
+    private = models.CharField(max_length=2,choices=RepositoryState.STATE_CHOICES,default=RepositoryState.PUBLIC) 
     name = models.CharField(max_length=200)
     labels = models.ManyToManyField(Label)
     lead = models.ForeignKey(User,on_delete=models.CASCADE,
@@ -33,7 +42,6 @@ class Repository(models.Model):
 
 class Star(models.Model):
     repository = models.ForeignKey(Repository, null=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
     user = models.ForeignKey(User,on_delete= models.CASCADE)
 
 class Watcher(models.Model):
@@ -62,9 +70,9 @@ class Milestone(models.Model):
 
 
 class Task(models.Model):
-    creator = models.ForeignKey(User,on_delete=models.CASCADE,related_name='task_creator',)
-    assignees = models.ManyToManyField(User,blank=True,related_name='task_assignee',)
-    milestone = models.ForeignKey(Milestone,on_delete=models.CASCADE)
+    creator = models.ForeignKey(User,on_delete=models.CASCADE,related_name='task_creator')
+    assignees = models.ManyToManyField(User,blank=True,related_name='task_assignee')
+    milestone = models.ForeignKey(Milestone,blank=True,on_delete=models.DO_NOTHING)
 class Event(models.Model):
     date_time = models.DateTimeField()
     task = models.ForeignKey(Task,on_delete=models.CASCADE)
@@ -82,7 +90,6 @@ class Issue(Task):
     description = models.TextField()
     date_created = models.DateField()
     pull_request = models.ForeignKey(PullRequest,on_delete=models.CASCADE)
-
 
 class StateChanged(Event):
     new_state = models.ForeignKey(State,on_delete=models.CASCADE)

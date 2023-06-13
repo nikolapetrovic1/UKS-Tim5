@@ -63,10 +63,10 @@ class Command(BaseCommand):
 
         Star.objects.all().delete()
 
-        star1 = Star(id=1, name="Star1", repository=r1,user = user1)
+        star1 = Star(id=1, repository=r1,user = user1)
         star1.save()
 
-        star2 = Star(id=2, name="Star2", repository=r2,user = user1)
+        star2 = Star(id=2,  repository=r2,user = user1)
         star2.save()
 
 

@@ -1,9 +1,10 @@
 from django.urls import path, include
-from . import views, user_view
+from . import views, user_view, repo_views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<int:repository_id>/", views.single_repo, name="single_repository"),
+    path("repo/<int:repository_id>/", views.single_repo, name="single_repository"),
+    path("repo/<int:repository_id>/milestones", repo_views.get_milestones, name="repo_milestones"),
     path("testredispage/", views.cached_initial, name="test_redis_page"),
     path("login/", user_view.user_login, name="login"),
     path("logout/", user_view.user_logout, name="logout"),

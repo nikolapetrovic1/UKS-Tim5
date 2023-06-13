@@ -1,0 +1,9 @@
+{% include "styling.html" %}
+{%block test %}
+    {% for milestone in milestones %}
+    <li class="list-group-item">
+        {{milestone.title}}
+    </li>
+    {% endfor %}
+    <p>pera</p>
+{% endblock %}
