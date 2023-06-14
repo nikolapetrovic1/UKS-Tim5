@@ -36,6 +36,8 @@ def user_login(request):
             user = form.get_user()
             login(request,user)
             return redirect("index")
+        else:
+            return render(request,"login.html",{"form": form})
     else:
         form = UserLoginForm(request)
         return render(request,"login.html", {"form":form})

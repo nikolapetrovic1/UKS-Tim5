@@ -1,11 +1,20 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.forms import ModelForm
+from django.forms import DateField, ModelForm, TextInput
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import Field
+from .models import User, Milestone, Repository
 
-from .models import User
+class BasicFormStyle(ModelForm):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.field_class = "form-group"
+        self.helper.form_class = "form-group"
+        self.helper.form_method = 'POST'
+        self.helper
+        self.helper.add_input(Submit('submit', "Submit"))
 
 class UserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -14,6 +23,7 @@ class UserForm(UserCreationForm):
         self.helper.field_class = "form-group"
         self.helper.form_class = "form-group"
         self.helper.form_method = 'POST'
+        self.helper
         self.helper.add_input(Submit('submit', 'Register'))
     class Meta:
         model = User
@@ -34,17 +44,29 @@ class UserLoginForm(AuthenticationForm):
         self.helper.form_class = "form-group"
         self.helper.form_action = "login"
         self.helper.form_method = 'POST'
-        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.add_input(Submit('submit', 'Login'))
 
-class UserUpdateForm(ModelForm):
+class UserUpdateForm(BasicFormStyle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.field_class = "form-group"
-        self.helper.form_class = "form-group"
-        self.helper.form_method = 'POST'
-        self.helper.add_input(Submit('submit', 'Submit'))
-
     class Meta:
         model = User
         fields = ["first_name","last_name","email","username"]
+
+class MilestoneForm(BasicFormStyle):
+    due_date = DateField(widget=TextInput(attrs={'type': 'date'})) 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    class Meta:
+        model = Milestone
+        fields = ["title","due_date","description"]
+
+class RepositoryForm(BasicFormStyle):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+    class Meta:
+        model = Repository
+        fields = ["name","private"]

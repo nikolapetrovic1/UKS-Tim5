@@ -63,7 +63,7 @@ class Commit(models.Model):
 
 class Milestone(models.Model):
     title = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000)
+    description = models.TextField(max_length=1000)
     due_date = models.DateField()
     state = models.CharField(max_length=2,choices=State.STATE_CHOICES,default=State.OPEN) 
     repo = models.ForeignKey(Repository, on_delete=models.CASCADE)

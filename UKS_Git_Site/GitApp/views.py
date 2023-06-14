@@ -79,3 +79,22 @@ def delete_star(request, star_id):
 
     return HttpResponse(template.render(context,request))
 
+def create_form_view(request,instance_object,FormType,redirect_page,template_name):
+    if request.method == 'POST':
+        form = FormType(request.POST,instance=instance_object)
+        if form.is_valid():
+            form.save()
+            return redirect_page
+    else:
+        form = FormType(instance=instance_object)
+        return render(request, template_name, {'form':form})
+
+# def create_form(request,FormClass,redirect_page,request_param):
+#     if request.method == 'POST':
+#         form = FormClass(request.POST,instance=request_param)
+#         if form.is_valid():
+#             form.save()
+#             return redirect(redirect_page)
+#     else:
+#         form = FormClass(instance=request_param)
+#         return render(request, template_name, {'form':form})
