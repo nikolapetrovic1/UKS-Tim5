@@ -1,0 +1,25 @@
+{% include "styling.html" %}
+{% load crispy_forms_tags %} 
+<div class="container">
+{% comment %} <form action="rename_repo" method="post" class="form-inline">
+  <div class="form-group">
+    <div class="inline">
+      <input
+        class="form-control mb-2 mr-sm-2"
+        id="repository_name"
+        type="text"
+        name="repository_name"
+        value="{{ repository.name }}"
+      />
+    </div>
+    <input type="submit" value="Rename" class="btn btn-primary mb-2 mr-sm-2" />
+  </div>
+</form> {% endcomm {%crispy form %}
+ent %}
+
+  {% comment %} <form action="{% url 'delete_user' %}">
+     <button class="btn btn-primary" type="submit">Delete account</button>
+  </form> {% endcomment %}
+
+</div>
+    {% comment %} <label for="repository_name">Repository name</label> {% endcomment %}

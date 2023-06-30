@@ -1,10 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.forms import DateField, ModelForm, TextInput
+from django.forms import CheckboxSelectMultiple, DateField, ModelChoiceField, ModelForm, ModelMultipleChoiceField, NullBooleanSelect, Select, SelectMultiple, TextInput, ChoiceField 
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import Field
-from .models import User, Milestone, Repository
+from .models import User, Milestone, Repository, Issue
 
 class BasicFormStyle(ModelForm):
     def __init__(self,*args, **kwargs):
@@ -70,3 +70,20 @@ class RepositoryForm(BasicFormStyle):
     class Meta:
         model = Repository
         fields = ["name","private"]
+class RenameRepoForm(BasicFormStyle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+    class Meta:
+        model = Repository
+        fields = ["name"]    
+class IssueForm(BasicFormStyle):
+    def __init__(self, *args, queryset, milestones, labels, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['assignees'] = ModelMultipleChoiceField(queryset=queryset,widget=CheckboxSelectMultiple,required=False)
+        self.fields['labels'] = ModelMultipleChoiceField(queryset=labels,widget=CheckboxSelectMultiple,required=False)
+        self.fields['milestone'] = ModelChoiceField(queryset=milestones,required=False,empty_label="Select Milestone")
+    class Meta:
+        model = Issue
+        fields = ["title","description","assignees","milestone","labels"]

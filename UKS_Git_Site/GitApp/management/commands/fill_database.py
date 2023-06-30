@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
-from ...models import User, Milestone, Repository, State, Star
-
+from ...models import * 
+from ...constants import create_default_labels
 
 class Command(BaseCommand):
     # args = '<args1 args2>'
@@ -34,10 +34,17 @@ class Command(BaseCommand):
         user2 = User.objects.create_user("user2", "user2@mailinator.com", "user2")
 
 
+        Label.objects.all().delete()
+        default_label = create_default_labels()
+        for label in default_label:
+            label.save()
+        
         Repository.objects.all().delete()
 
         r1 = Repository(id=1,name="test",lead = user1)
         r1.save()
+        r1.developers.add(user1)
+        # r1.save()
 
         r2 = Repository(id=2, name="Repo2",lead=user2)
         r2.save()
@@ -46,9 +53,15 @@ class Command(BaseCommand):
         r3.save()
 
         Milestone.objects.all().delete()
-        milestone1 = Milestone(title="test milestone",description="test",due_date = '2024-05-26',state=State.OPEN,repo = r1)
+        milestone1 = Milestone(id=1,title="test milestone",description="test",due_date = '2024-05-26',state=State.OPEN,repository = r1)
         milestone1.save()
 
+
+        Issue.objects.all().delete()
+        issue1 = Issue(id=1,title="issue1",description = "test", repository = r1,milestone=milestone1,creator=user1, state= IssueState.CLOSED)
+        issue2 = Issue(id=2,title="issue2",description = "test", repository = r1,milestone=milestone1,creator=user1)
+        issue1.save()
+        issue2.save()
         Star.objects.all().delete()
 
         star1 = Star(id=1, repository=r1,user = user1)

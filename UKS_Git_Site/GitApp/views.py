@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
-from .models import Repository, User, Star, Milestone
+from .models import Issue, Label, Repository, User, Star, Milestone
 
 
 from django.conf import settings
@@ -33,6 +33,7 @@ def cached_initial(request):
     repoNum = len(Repository.objects.all())
     return render(request, "cache_test.html", {"repoNum": repoNum})
 
+
 def add_users_to_repo(request, repository_id, user_id):
     repo = get_object_or_404(Repository, id=repository_id)
     user = get_object_or_404(User, id=user_id)
@@ -40,35 +41,41 @@ def add_users_to_repo(request, repository_id, user_id):
     repo.contributors = repo.contributors + (",%s" % user)
     repo.save()
 
-    return render(request,"add_users.html", {'repo' : repo.contributors, 'user' : user})
+    return render(request, "add_users.html", {'repo': repo.contributors, 'user': user})
+
 
 def single_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    star_count = Star.objects.filter(repository = repo).count()
-    milestones = Milestone.objects.filter(repo = repo)
-    return render(request,"repository_page.html",{"repository" : repo, "star_count": star_count, "milestones": milestones})
+    star_count = Star.objects.filter(repository=repo).count()
+    milestones = Milestone.objects.filter(repository=repo)
+    issues = Issue.objects.filter(repository=repo)
+    return render(request, "repository_page.html", 
+                  {"repository": repo, "star_count": star_count, "issues": issues, "milestones": milestones,"labels": repo.labels.all()})
+
 
 @login_required()
 def add_users_to_repo(request, repository_id, user_id):
     owner = get_object_or_404(User, id=request.user.id)
-    repo = get_object_or_404(Repository, id=repository_id,project_lead=owner)
+    repo = get_object_or_404(Repository, id=repository_id, project_lead=owner)
     user = get_object_or_404(User, id=user_id)
     repo.developers.add(user)
     repo.save()
 
-    return render(request,"add_users.html", {'repo' : repo.developers, 'user' : user})
+    return render(request, "add_users.html", {'repo': repo.developers, 'user': user})
 
 
 @login_required()
 def new_star(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     user = get_object_or_404(User, id=request.user.id)
-    star , _ = Star.objects.get_or_create(repository=repo,user=user)
+    star, _ = Star.objects.get_or_create(repository=repo, user=user)
     url = reverse("single_repository", args=[repository_id])
     return redirect(url)
+
+
 @login_required()
 def delete_star(request, star_id):
-    star = get_object_or_404(Star, id = star_id)
+    star = get_object_or_404(Star, id=star_id)
     star.delete()
 
     user = get_object_or_404(User, id=request.user.id)
@@ -77,17 +84,22 @@ def delete_star(request, star_id):
 
     context = {'user': user, 'stars': user.stars.all()}
 
-    return HttpResponse(template.render(context,request))
+    return HttpResponse(template.render(context, request))
 
-def create_form_view(request,instance_object,FormType,redirect_page,template_name):
+def get_labels(request):
+    labels = Label.objects.all()
+    return render(request,"labels.html",{"labels":labels})
+
+
+def create_form_view(request, instance_object, FormType, redirect_page, template_name):
     if request.method == 'POST':
-        form = FormType(request.POST,instance=instance_object)
+        form = FormType(request.POST, instance=instance_object)
         if form.is_valid():
             form.save()
             return redirect_page
     else:
         form = FormType(instance=instance_object)
-        return render(request, template_name, {'form':form})
+        return render(request, template_name, {'form': form})
 
 # def create_form(request,FormClass,redirect_page,request_param):
 #     if request.method == 'POST':

@@ -1,9 +1,8 @@
-{% include "styling.html" %}
+{% comment %} {% include "styling.html" %} {% endcomment %}
 {%block test %}
     {% for milestone in milestones %}
     <li class="list-group-item">
-        {{milestone.title}}
+        <a href="{% url 'milestone_page' milestone_id=milestone.id %}">{{milestone.title}}</a>
     </li>
     {% endfor %}
-    <p>pera</p>
 {% endblock %}
