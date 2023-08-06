@@ -2,7 +2,7 @@
 {%block test %}
     {% for milestone in milestones %}
     <li class="list-group-item">
-        <a href="{% url 'milestone_page' milestone_id=milestone.id %}">{{milestone.title}}</a>
+        <a href="{% url 'milestone_page' milestone_id=milestone.id repository_id=milestone.repository_id%}">{{milestone.title}}</a>
     </li>
     {% endfor %}
 {% endblock %}

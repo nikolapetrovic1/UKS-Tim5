@@ -6,16 +6,16 @@
     <div class="progress">
       <div class="progress-bar" role="progressbar" style="width: {{progress.percent}}%" aria-valuenow="{{progress.percent}}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
-    <p>{{progress.percent}}% complete <a href="{% url 'milestone_open_issues' milestone_id=milestone.id %}">{{progress.open_issues}} open</a> <a href="{% url 'milestone_closed_issues' milestone_id=milestone.id %}">{{progress.closed_issues}} closed </a></p>
+    <p>{{progress.percent}}% complete <a href="{% url 'milestone_open_issues' milestone_id=milestone.id repository_id=milestone.repository_id %}">{{progress.open_issues}} open</a> <a href="{% url 'milestone_closed_issues' milestone_id=milestone.id repository_id=milestone.repository_id %}">{{progress.closed_issues}} closed </a></p>
     
     {% if show_edit %}
-    <p> <a href="{% url 'update_milestone' milestone_id=milestone.id %}">Edit</a>  
+    <p> <a href="{% url 'update_milestone' milestone_id=milestone.id repository_id=milestone.repository_id %}">Edit</a>  
       {% if milestone.state == "OP" %}
-            <a href="{% url 'close_milestone' milestone_id=milestone.id %}">Close</a> 
+            <a href="{% url 'close_milestone' milestone_id=milestone.id repository_id=milestone.repository_id %}">Close</a> 
       {% else %}
-            <a href="{% url 'open_milestone' milestone_id=milestone.id %}">Reopen</a>  
+            <a href="{% url 'open_milestone' milestone_id=milestone.id repository_id=milestone.repository_id %}">Reopen</a>  
       {% endif %}
-            <a style="color: red" href="{% url 'delete_milestone' milestone_id=milestone.id %}">Delete</a> </p>
+            <a style="color: red" href="{% url 'delete_milestone' milestone_id=milestone.id repository_id=milestone.repository_id %}">Delete</a> </p>
     {% endif %}
 
     {% include "issues.html" with issues=issues %}
