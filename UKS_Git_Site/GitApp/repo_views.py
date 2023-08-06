@@ -7,7 +7,7 @@ from .views import create_form_view
 
 from .forms import IssueForm, RepositoryForm, RenameRepoForm
 from .models import Repository, Issue, Milestone, User, Label
-from .events import IssueCreated
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -47,10 +47,10 @@ def create_issue(request, repository_id):
         )
         if form.is_valid():
             issue = form.save()
-            issue_created = IssueCreated(
-                issue_id=issue.id, title=issue.title, description=issue.description
-            )
-            issue_created.save()
+            # issue_created = IssueCreated(
+            #     issue_id=issue.id, title=issue.title, description=issue.description
+            # )
+            # issue_created.save()
             return redirect("index")
     else:
         form = IssueForm(
