@@ -6,8 +6,7 @@ from .utils import milestone_progress
 from .views import create_form_view
 
 from .forms import IssueForm, RepositoryForm, RenameRepoForm
-from .models import Repository, Issue, Milestone, User, Label
-
+from .models import Repository, Issue, Milestone, User, Label, IssueCreated
 from django.contrib.auth.decorators import login_required
 
 
@@ -31,7 +30,23 @@ def create_repository(request):
     )
 
 
-@login_required()
+#
+# class Event(models.Model):
+#     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+#     date_time = models.DateTimeField(auto_now=True)
+#     entity_type = models.CharField(max_length=200)
+#     entity_id = models.IntegerField()
+#
+#
+# class IssueCreated(Event):
+#     title = models.CharField(max_length=200)
+#     description = models.TextField(blank=True)
+#
+#     def __str__(self):
+#         return f"Issue {self.title} created by {self.created_by} on {self.date_time}"
+
+
+@login_required
 def create_issue(request, repository_id):
     repository = get_object_or_404(Repository, id=repository_id)
     milestones = Milestone.objects.filter(repository=repository)
@@ -47,10 +62,13 @@ def create_issue(request, repository_id):
         )
         if form.is_valid():
             issue = form.save()
-            # issue_created = IssueCreated(
-            #     issue_id=issue.id, title=issue.title, description=issue.description
-            # )
-            # issue_created.save()
+            issue_created = IssueCreated(
+                created_by=request.user,
+                entity_type="issue",
+                entity_id=issue.id,
+                title=issue.title,
+            )
+            issue_created.save()
             return redirect("index")
     else:
         form = IssueForm(

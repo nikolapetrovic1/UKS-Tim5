@@ -85,6 +85,16 @@ class Command(BaseCommand):
         )
         issue1.save()
         issue2.save()
+
+        IssueCreated.objects.all().delete()
+        issue_created = IssueCreated(
+            created_by=user1,
+            entity_type="issue",
+            entity_id=issue1.id,
+            title=issue1.title,
+        )
+        issue_created.save()
+
         Star.objects.all().delete()
 
         star1 = Star(id=1, repository=r1, user=user1)
@@ -95,4 +105,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._add_data()
-        # self._add_repositories()
+        # self._add_repositories(t)

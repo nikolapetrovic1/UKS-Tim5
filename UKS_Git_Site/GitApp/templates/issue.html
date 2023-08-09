@@ -9,6 +9,12 @@
     <p> {{issue.state}} </p>
     <p> {{issue.assignees}} </p>
     <p> {{issue.milestone}} </p>
+    <ul>
+        {% for event in events %}
+            <li> {{event}}</li>
+        {% endfor %}
+    </ul>
+    <p> {{issue.events}} </p>
 {% endblock %}
     <!-- title = models.CharField(max_length=200) -->
     <!-- description = models.TextField(blank=True) -->

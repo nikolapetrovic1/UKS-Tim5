@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from polymorphic.models import PolymorphicModel
 
 class IssueState(models.Model):
     OPEN = "OP"
@@ -114,14 +114,15 @@ class Task(models.Model):
     assignees = models.ManyToManyField(User, blank=True, related_name="task_assignee")
 
 
-class Event(models.Model):
-    date_time = models.DateTimeField()
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+#
+# class Event(models.Model):
+#     date_time = models.DateTimeField()
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
 
-class Comment(Event):
-    content = models.TextField(max_length=1500)
-    date_created = models.DateTimeField(auto_now=True)
+# class Comment(Event):
+#     content = models.TextField(max_length=1500)
+#     date_created = models.DateTimeField(auto_now=True)
 
 
 class PullRequest(Task):
@@ -148,9 +149,26 @@ class Issue(Task):
     )
 
 
-class StateChanged(Event):
-    new_state = models.ForeignKey(State, on_delete=models.CASCADE)
+class Event(PolymorphicModel):
+    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_time = models.DateTimeField(auto_now=True)
+    entity_type = models.CharField(max_length=200)
+    entity_id = models.IntegerField()
+    def __str__(self):
+        return f"Event"
+
+class IssueCreated(Event):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Issue {self.title} created by {self.created_by} on {self.date_time.date()}"
 
 
-class LabelApplication(Event):
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+#
+# class StateChanged(Event):
+#     new_state = models.ForeignKey(State, on_delete=models.CASCADE)
+#
+#
+# class LabelApplication(Event):
+#     label = models.ForeignKey(Label, on_delete=models.CASCADE)
