@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from polymorphic.models import PolymorphicModel
 
+
 class IssueState(models.Model):
     OPEN = "OP"
     CLOSED = "CL"
@@ -59,6 +60,9 @@ class Repository(models.Model):
     )
     developers = models.ManyToManyField(
         User, blank=True, related_name="project_developer"
+    )
+    forked_from = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.SET_NULL
     )
 
 
@@ -150,22 +154,54 @@ class Issue(Task):
 
 
 class Event(PolymorphicModel):
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     date_time = models.DateTimeField(auto_now=True)
     entity_type = models.CharField(max_length=200)
     entity_id = models.IntegerField()
+
     def __str__(self):
         return f"Event"
+
 
 class IssueCreated(Event):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Issue {self.title} created by {self.created_by} on {self.date_time.date()}"
+        return f"{self.title} created by {self.created_by} on {self.date_time.date()}"
 
 
-#
+class IssueClosed(Event):
+    issue_id = models.ForeignKey(Issue, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"Issue closed by {self.created_by} on {self.date_time.date()}"
+
+
+class IssueOpened(Event):
+    issue_id = models.ForeignKey(Issue, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"Issue open by {self.created_by} on {self.date_time.date()}"
+
+
+class Comment(models.Model):
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    date_time = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.created_by} - {self.content}"
+
+
+class Reaction(models.Model):
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    code = models.CharField(max_length=20)
+    count = models.IntegerField()
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+
 # class StateChanged(Event):
 #     new_state = models.ForeignKey(State, on_delete=models.CASCADE)
 #

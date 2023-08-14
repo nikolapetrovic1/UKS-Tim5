@@ -1,0 +1,25 @@
+{% include "styling.html" %}
+{% block comments %}
+  {% for comment in comments %}
+    <li class="container list-group-item">
+      <div class="row">
+        {{comment}}
+      </div>
+      <div class="row">
+        <button type="button" class="btn btn-secondary">👍1</button>
+        <button type="button" class="list-group-item">👎</button>
+        <button type="button" class="list-group-item">♥</button>
+        <button type="button" class="list-group-item">😂</button
+        </div>
+      </li>
+  {% endfor %}
+  <br>
+  <form action="{% url 'create_comment' task_id=task_id %}" method="post" class="input-group mb-3">
+    {% csrf_token %}
+    <input type="text" name="content" id="content" class="form-control" placeholder="Enter comment" aria-label="Enter comment" aria-describedby="basic-addon2">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="submit">Comment</button>
+    </div>
+  </form>
+  {{reactions}}
+{% endblock %}

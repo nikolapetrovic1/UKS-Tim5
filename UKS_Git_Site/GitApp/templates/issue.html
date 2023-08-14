@@ -1,25 +1,33 @@
 {% extends "base.html" %}
-
-
 {% block content %}
-    <h2>{{issue.title}}</h2>
+    <h2>{{issue.title}}</h2> <p>- {{issue.date_created}} </p>
+    {% if issue.state == "CL" %}
+        <p> CLOSED </p>
+    {% else %}
+        <p> OPEN </p>
+    {% endif %}
     <p> {{issue.description}} </p>
-    <p> {{issue.date_created}} </p>
-    <p> {{issue.labels}} </p>
-    <p> {{issue.state}} </p>
-    <p> {{issue.assignees}} </p>
-    <p> {{issue.milestone}} </p>
+    <p> Assignees </p>
     <ul>
-        {% for event in events %}
-            <li> {{event}}</li>
+        {% for assignee in issue.assignees.all %}
+            <li class="list-group-item">{{assignee}}</li>
         {% endfor %}
     </ul>
-    <p> {{issue.events}} </p>
+    <p> Labels </p>
+    <ul>
+        {% for label in issue.labels.all %}
+            <li class="list-group-item">{{label}}</li>
+        {% endfor %}
+    </ul>
+    <p> Milestone - {{issue.milestone.title}} </p>
+    <a href="{% url 'update_issue' repository_id=issue.repository_id issue_id=issue.id %}"><button class="btn btn-success">Edit issue</button></a>
+    <ul>
+        {% for event in events %}
+            <li class="list-group-item"> {{event}}</li>
+        {% endfor %}
+    </ul>
+    {% block comments %}
+        {% include 'comments.html' with comments=comments task_id=issue.id%}
+    {% endblock %}
 {% endblock %}
-    <!-- title = models.CharField(max_length=200) -->
-    <!-- description = models.TextField(blank=True) -->
-    <!-- date_created = models.DateField(auto_now=True) -->
-    <!-- repository = models.ForeignKey(Repository, on_delete=models.CASCADE) -->
-    <!-- labels = models.ManyToManyField(Label) -->
-    <!-- state = models.CharField( -->
-    <!--     max_length=2, choices=IssueState.STATE_CHOICES, default=IssueState.OPEN) -->
+

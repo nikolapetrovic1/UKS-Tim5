@@ -1,6 +1,6 @@
 from django.urls import path, include
-from . import views, user_view, repo_views
-from .model_views import milestone_views, issue_views
+from . import views, user_view
+from .model_views import milestone_views, issue_views, repo_views
 
 
 issue_patterns = [
@@ -8,6 +8,16 @@ issue_patterns = [
         "repo/<int:repository_id>/issue/<int:issue_id>",
         issue_views.get_issue,
         name="issue_page",
+    ),
+    path(
+        "repo/<int:repository_id>/issues/create",
+        issue_views.create_issue,
+        name="create_issue",
+    ),
+    path(
+        "repo/<int:repository_id>/issue/<int:issue_id>/update",
+        issue_views.update_issue,
+        name="update_issue",
     ),
 ]
 
@@ -73,6 +83,11 @@ user_patterns = [
     path("labels", views.get_labels, name="labels"),
 ]
 
+repo_patterns = [
+    path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
+    path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
+]
+
 urlpatterns = (
     [
         path("", views.index, name="index"),
@@ -83,11 +98,6 @@ urlpatterns = (
             repo_views.get_repo_issues,
             name="repo_issues",
         ),
-        path(
-            "repo/<int:repository_id>/issues/create",
-            repo_views.create_issue,
-            name="create_issue",
-        ),
         path("testredispage/", views.cached_initial, name="test_redis_page"),
         path("new_star/<int:repository_id>", views.new_star, name="new_star"),
         path("delete_star/<int:star_id>", views.delete_star, name="delete_star"),
@@ -97,7 +107,11 @@ urlpatterns = (
             name="repos_by_user_id",
         ),
         path("repo/rename", repo_views.rename_repo, name="rename_repo"),
+        path(
+            "create_comment/<int:task_id>", views.create_comment, name="create_comment"
+        ),
     ]
+    + repo_patterns
     + issue_patterns
     + milestone_patterns
     + user_patterns
