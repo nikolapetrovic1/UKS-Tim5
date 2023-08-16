@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-5a1w3rum6n^7yne_^(14rrx+)q!)bhv7v+q8ybq4_rxnhgz-e5"
+SECRET_KEY = 'django-insecure-5a1w3rum6n^7yne_^(14rrx+)q!)bhv7v+q8ybq4_rxnhgz-e5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,84 +31,80 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "GitApp",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
+    'GitApp',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     "crispy_forms",
-    "crispy_bootstrap4",
-    "polymorphic",
-    "django_bootstrap_icons",
-    "livesync",
-    "django.contrib.staticfiles",
+    "crispy_bootstrap4"
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "livesync.core.middleware.DjangoLiveSyncMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = "UKS_Git_Site.urls"
+ROOT_URLCONF = 'UKS_Git_Site.urls'
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "UKS_Git_Site.wsgi.application"
+WSGI_APPLICATION = 'UKS_Git_Site.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "djangodb",
-        "USER": "postgres",
-        "PASSWORD": "pera",
-        "HOST": "localhost",
-        "PORT": 5432,
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
 
-AUTH_USER_MODEL = "GitApp.User"
+AUTH_USER_MODEL = "GitApp.User" 
 
-LOGIN_URL = "login"
+LOGIN_URL = 'login'
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -116,9 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -129,13 +125,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = '/static/'
 # The root folder that provides static files for the deployment.
 # To put all static files here, run the following command:
 # python manage.py collectstatic --noinput
 
-STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
-
+STATIC_ROOT = '../static/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
@@ -143,42 +138,44 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # automatski generise kljuc
 # (https://stackoverflow.com/questions/66971594/auto-create-primary-key-used-when-not-defining-a-primary-key-type-warning-in-dja)
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # !!! HACK !!!
 # The initial idea was to use sqlite for testing and postgres for "production".
 # To do this, prepend UKS_TEST_DB before linux command.
 # Linux tested... Not guaranteed for others.
 # https://stackoverflow.com/questions/4650509/different-db-for-testing-in-django/4650651#4650651
-# use_testdb = os.environ.get("UKS_TEST_DB", "")
-# if use_testdb == "ON":
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-#             # custom name for testing db
-#             "TEST": {
-#                 "ENGINE": "django.db.backends.sqlite3",
-#                 "NAME": os.path.join(BASE_DIR, "testdb.sqlite3"),
-#             },
-#         }
-#     }
-# else:
-#     # use redis as a cache in production
-#     CACHES = {
-#         "default": {
-#             "BACKEND": "django_redis.cache.RedisCache",
-#             "LOCATION": "redis://redis:6379",
-#             "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-#             "KEY_PREFIX": "uks-tim5",
-#         }
-#     }
-#
-#     # Cache time to live is 15 minutes.
-#     CACHE_TTL = 60 * 15
-#     # store session in cache
-#     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-#     SESSION_CACHE_ALIAS = "default"
-#     # Note that caching is done only for sessions.
-#     # If the views should be cached too, then check how to do this
-#     # by introspecting the views.lista_kategorija.
+use_testdb = os.environ.get('UKS_TEST_DB', '')
+if use_testdb == 'ON':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            # custom name for testing db
+            'TEST': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'testdb.sqlite3'),
+            }
+        }
+    }
+else:
+    # use redis as a cache in production
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://redis:6379",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+            "KEY_PREFIX": "uks-tim5"
+        }
+    }
+
+    # Cache time to live is 15 minutes.
+    CACHE_TTL = 60 * 15
+    # store session in cache
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
+    # Note that caching is done only for sessions.
+    # If the views should be cached too, then check how to do this
+    # by introspecting the views.lista_kategorija.
