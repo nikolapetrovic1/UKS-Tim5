@@ -7,13 +7,16 @@
       <div class="row">
         {{comment}}
       </div>
-      <div class="row">
-        <button>{% bs_icon 'hand-thumbs-up' %} 1</button>
-        <button type="button" class="list-group-item">👎</button>
-        <button type="button" class="list-group-item">♥</button>
-        <button type="button" class="list-group-item">😂</button
-        </div>
-      </li>
+      <div class="d-inline-flex row">
+        {% for reaction in comment.reactions %}
+          <a href="{% url 'create_reaction' comment_id=comment.id reaction_type=reaction.0 %}">
+            <button class="mr-1 btn btn-{% if reaction.2 %}primary{% else %}secondary{% endif %}">
+              {% bs_icon reaction.0 %} <span class="badge badge-light">{{reaction.1}}
+              </span>            </button>
+          </a>
+        {% endfor %}
+      </div>
+    </li>
   {% endfor %}
   <br>
   <form action="{% url 'create_comment' task_id=task_id %}" method="post" class="input-group mb-3">
@@ -23,5 +26,7 @@
       <button class="btn btn-outline-secondary" type="submit">Comment</button>
     </div>
   </form>
-  {{reactions}}
+  {% for reaction in reactions %}
+    {{reaction}}
+  {% endfor %}
 {% endblock %}

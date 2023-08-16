@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from GitApp.forms import IssueForm, CommentForm
 from django.contrib.auth.decorators import login_required
 
-from GitApp.views import get_reactions, get_user_reactions
+from GitApp.views import get_reaction_count
 
 
 def get_issue(request, repository_id, issue_id):
@@ -20,10 +20,11 @@ def get_issue(request, repository_id, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
     issue_events = Event.objects.filter(entity_type="issue", entity_id=issue_id)
     comments = Comment.objects.filter(task=issue)
-    all_user_reactions = []
     for comment in comments:
-        user_reactions = Reaction.objects.filter(comment=comment)
-        print(user_reactions, comment)
+        if request.user.is_authenticated:
+            comment.reactions = get_reaction_count(comment, request.user)
+        else:
+            comment.reactions = get_reaction_count(comment, None)
     return render(
         request,
         "issue.html",
@@ -32,7 +33,6 @@ def get_issue(request, repository_id, issue_id):
             "repo": repo,
             "events": issue_events,
             "comments": comments,
-            "reactions": all_user_reactions,
         },
     )
 

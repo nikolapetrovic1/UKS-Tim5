@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 
@@ -40,10 +41,10 @@ def add_users_to_repo(request, repository_id, user_id):
     repo = get_object_or_404(Repository, id=repository_id)
     user = get_object_or_404(User, id=user_id)
 
-    repo.contributors = repo.contributors + (",%s" % user)
+    repo.developers = repo.developers + (",%s" % user)
     repo.save()
 
-    return render(request, "add_users.html", {"repo": repo.contributors, "user": user})
+    return render(request, "add_users.html", {"repo": repo.developers, "user": user})
 
 
 def single_repo(request, repository_id):
@@ -119,6 +120,16 @@ def create_form_view(request, instance_object, FormType, redirect_page, template
     # tas
 
 
+def redirect_back(request):
+    referer = request.META.get("HTTP_REFERER")
+
+    if referer:
+        return redirect(referer)
+    else:
+        # Redirect to a default page if there's no referer available
+        return redirect("default_page_name")
+
+
 @login_required()
 def create_comment(request, task_id):
     if request.method == "POST":
@@ -135,21 +146,41 @@ def create_comment(request, task_id):
         return redirect("default_page_name")
 
 
-def get_reactions(request, comment_id):
+def get_reaction_types():
+    return ["hand-thumbs-up", "hand-thumbs-down", "heart"]
+
+
+def get_reaction_count(comment, user):
+    counts = []
+    for reaction in get_reaction_types():
+        counts.append(
+            [
+                reaction,
+                Reaction.objects.filter(comment=comment, code=reaction).count(),
+                Reaction.objects.filter(
+                    comment=comment, created_by=user, code=reaction
+                ).exists()
+                if user
+                else False,
+            ]
+        )
+    return counts
+
+
+@login_required
+def create_reaction(request, comment_id, reaction_type):
+    if reaction_type not in get_reaction_types():
+        return HttpResponseForbidden("Invalid reaction type")
     comment = get_object_or_404(Comment, id=comment_id)
-    reactions = Reaction.objects.filter(comment=comment)
-    for reaction in unique_reactions:
-        reaction.count = sum(r.code == reaction.code for r in reactions)
-    user_reactions = get_user_reactions(request.user, reactions)
-    return unique_reactions, user_reactions
-
-
-def get_user_reactions(user, reactions):
-    user_reactions = []
-    for reaction in reactions:
-        if reaction.created_by == user:
-            user_reactions.append(reaction.code)
-    return user_reactions
+    reaction = Reaction.objects.filter(
+        created_by=request.user, code=reaction_type, comment=comment
+    )
+    if reaction:
+        reaction.delete()
+        return redirect_back(request)
+    reaction = Reaction(created_by=request.user, code=reaction_type, comment=comment)
+    reaction.save()
+    return redirect_back(request)
 
 
 # def create_form(request,FormClass,redirect_page,request_param):

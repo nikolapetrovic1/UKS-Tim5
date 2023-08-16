@@ -38,7 +38,7 @@ class Label(models.Model):
     color = models.CharField(max_length=100)
 
     def __str__(self):
-        return "{} - {}".format(self.name, self.description)
+        return "{} - {}".format(self.name, self.color)
 
 
 class User(AbstractUser):
@@ -198,8 +198,10 @@ class Comment(models.Model):
 class Reaction(models.Model):
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     code = models.CharField(max_length=20)
-    count = models.IntegerField()
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.created_by} - {self.code}"
 
 
 # class StateChanged(Event):
