@@ -14,7 +14,7 @@ from django.forms import (
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
-from .models import User, Milestone, Repository, Issue
+from .models import Comment, User, Milestone, Repository, Issue
 
 
 class BasicFormStyle(ModelForm):
@@ -115,3 +115,12 @@ class IssueForm(BasicFormStyle):
     class Meta:
         model = Issue
         fields = ["title", "description", "assignees", "milestone", "labels"]
+
+
+class CommentForm(BasicFormStyle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Comment
+        fields = ["content"]

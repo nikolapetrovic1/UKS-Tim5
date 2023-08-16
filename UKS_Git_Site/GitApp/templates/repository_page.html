@@ -1,76 +1,94 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="row">
-  <h2>{{repository.name}}</h2>
-</div>
-<div class="row">
-  {% for label in labels %}
-    <span class="label" style={"background-color: {{label.color}}"}>{{label.name}}</span>
-  {% endfor %}
-</div>
-<p>Stars: {{star_count}}</p>
-{% if request.user.is_authenticated %}
+{% load bootstrap_icons %}
 
-<a href="{% url 'new_star' repository.id %}"
-  ><button class="btn btn-success">Star</button></a
->
+{% block content %}
+  <div class="row">
+    <h2>{{repository.name}}</h2>
+    <div class="float-right">
+      <a href="{% url 'fork_repo' repository.id %}">
+        <button class="btn btn-success">Fork</button>
+      </a>
+    </div>
+  </div>
+  <div class="row">
+    {% for label in labels %}
+      <span class="label" style={"background-color: {{label.color}}"}>{{label.name}}</span>
+    {% endfor %}
+  </div>
+  <div class="row">
+
+  </div>
+  <div class="row">
+    {% if repository.forked_from %}
+      <p> Forked from <a href="{% url 'single_repository' repository_id=repository.forked_from.id %}">{{repository.forked_from.name}}</a></p>
+    {% endif %}
+  </div>
+  {{repository.developers}}
+  {% bs_icon 'star' %}
+  <p>Stars: {{star_count}}</p>
+
+  {% if request.user.is_authenticated %}
+
+    <a href="{% url 'new_star' repository.id %}"
+    ><button class="btn btn-success">Star</button></a
+      >
 {% comment %}
 <a href="{% url 'delete_star' star.id %}"
   ><button class="btn btn-success">Remove Star</button></a
 >
 {% endcomment %} {% endif %}
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-  <li class="nav-item">
-    <a
-      class="nav-link active"
-      id="home-tab"
-      data-toggle="tab"
-      href="#issues"
-      role="tab"
-      aria-controls="issues"
-      aria-selected="true"
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a
+        class="nav-link active"
+        id="home-tab"
+        data-toggle="tab"
+        href="#issues"
+        role="tab"
+        aria-controls="issues"
+        aria-selected="true"
       >Issues</a
-    >
-  </li>
-  <li class="nav-item">
-    <a
-      class="nav-link"
-      id="milestone-tab"
-      data-toggle="tab"
-      href="#milestones"
-      role="tab"
-      aria-controls="milestones"
-      aria-selected="false"
-      >Milestones</a
-    >
-  </li>
-  <li class="nav-item">
-    <a
-      class="nav-link"
-      id="pr-tab"
-      data-toggle="tab"
-      href="#settings"
-      role="tab"
-      aria-controls="settings"
-      aria-selected="false"
-      >Settings</a
-    >
-  </li>
-</ul>
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          id="milestone-tab"
+          data-toggle="tab"
+          href="#milestones"
+          role="tab"
+          aria-controls="milestones"
+          aria-selected="false"
+        >Milestones</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            id="pr-tab"
+            data-toggle="tab"
+            href="#settings"
+            role="tab"
+            aria-controls="settings"
+            aria-selected="false"
+          >Settings</a
+            >
+          </li>
+        </ul>
 
-<div class="tab-content" id="myTabContent">
-  <div
-    class="tab-pane fade show active"
-    id="issues"
-    role="tabpanel"
-    aria-labelledby="issue-tab"
-  >
-    {% include 'issues.html' with issues=issues %}
-    <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
-  </div>
-  <div class="tab-pane fade" id="milestones" role="tabpanel">
-    {% include 'milestones.html' with milestones=milestones%}
-  </div>
+        <div class="tab-content" id="myTabContent">
+          <div
+            class="tab-pane fade show active"
+            id="issues"
+            role="tabpanel"
+            aria-labelledby="issue-tab"
+          >
+            {% include 'issues.html' with issues=issues %}
+            <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
+          </div>
+          <div class="tab-pane fade" id="milestones" role="tabpanel">
+            {% include 'milestones.html' with milestones=milestones%}
+          </div>
   {% comment %}
   <div
     class="tab-pane fade"
@@ -81,14 +99,14 @@
     ...
   </div>
   {% endcomment %}
-  <div
-    class="tab-pane fade"
-    id="settings"
-    role="tabpanel"
-    aria-labelledby="pills-contact-tab"
-  >
-    {% include 'settings.html' with repository=repository %}
-  </div>
-</div>
+          <div
+            class="tab-pane fade"
+            id="settings"
+            role="tabpanel"
+            aria-labelledby="pills-contact-tab"
+          >
+            {% include 'settings.html' with repository=repository %}
+          </div>
+        </div>
 
 {% endblock %}

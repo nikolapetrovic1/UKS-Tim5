@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
         r1 = Repository(id=1, name="test", lead=user1)
         r1.save()
-        r1.developers.add(user1)
+        r1.developers.add(user2)
         r1.labels.add(Label.objects.filter(id=1).first())
         r1.labels.add(Label.objects.filter(id=2).first())
         # r1.save()
@@ -85,6 +85,26 @@ class Command(BaseCommand):
         )
         issue1.save()
         issue2.save()
+
+        Comment.objects.all().delete()
+
+        comm1 = Comment(id=1, created_by=user1, content="Great issue!!", task=issue1)
+        comm1.save()
+
+        Reaction.objects.all().delete()
+        # reaction1 = Reaction(id=1, created_by=user1, code="U+1F600", comment=comm1)
+        # reaction2 = Reaction(id=2, created_by=user1, code="U+1F44D", comment=comm1)
+        # reaction1.save()
+        # reaction2.save()
+        IssueCreated.objects.all().delete()
+        issue_created = IssueCreated(
+            created_by=user1,
+            entity_type="issue",
+            entity_id=issue1.id,
+            title=issue1.title,
+        )
+        issue_created.save()
+
         Star.objects.all().delete()
 
         star1 = Star(id=1, repository=r1, user=user1)
@@ -95,4 +115,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._add_data()
-        # self._add_repositories()
+        # self._add_repositories(t)
