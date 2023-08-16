@@ -1,33 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>{{issue.title}}</h2> <p>- {{issue.date_created}} </p>
-    {% if issue.state == "CL" %}
-        <p> CLOSED </p>
-    {% else %}
-        <p> OPEN </p>
-    {% endif %}
-    <p> {{issue.description}} </p>
-    <p> Assignees </p>
-    <ul>
-        {% for assignee in issue.assignees.all %}
-            <li class="list-group-item">{{assignee}}</li>
-        {% endfor %}
-    </ul>
-    <p> Labels </p>
-    <ul>
-        {% for label in issue.labels.all %}
-            <li class="list-group-item">{{label}}</li>
-        {% endfor %}
-    </ul>
-    <p> Milestone - {{issue.milestone.title}} </p>
-    <a href="{% url 'update_issue' repository_id=issue.repository_id issue_id=issue.id %}"><button class="btn btn-success">Edit issue</button></a>
-    <ul>
-        {% for event in events %}
-            <li class="list-group-item"> {{event}}</li>
-        {% endfor %}
-    </ul>
-    {% block comments %}
-        {% include 'comments.html' with comments=comments task_id=issue.id%}
-    {% endblock %}
+
+    <div class="container">
+        <div class="row">
+            <p><b>{{issue.title}}</b> - {{issue.date_created}}
+                {% if issue.state == "CL" %}
+                    <span class="badge badge-secondary"> CLOSED </span>
+                {% else %}
+                    <span class="badge badge-primary"> CLOSED </span>
+                {% endif %}
+            </p>
+            <div class="col-7 text-end">
+                <a href="{% url 'update_issue' repository_id=issue.repository_id issue_id=issue.id %}"><button class="btn btn-success">Edit issue</button></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <p> Milestone - {{issue.milestone.title}} </p>
+        </div>
+        <div class="row">
+            <p> Description - {{issue.description}} </p>
+        </div>
+        <div class="row">
+            <p> Assignees </p>
+        </div>
+        <div class="row">
+            <ul>
+                {% for assignee in issue.assignees.all %}
+                    <li class="list-group-item">{{assignee}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <p> Labels </p>
+        <ul>
+            {% for label in issue.labels.all %}
+                <li class="list-group-item">{{label}}</li>
+            {% endfor %}
+        </ul>
+        <ul>
+            {% for event in events %}
+                <li class="list-group-item"> {{event}}</li>
+            {% endfor %}
+        </ul>
+        {% block comments %}
+            {% include 'comments.html' with comments=comments task_id=issue.id%}
+        {% endblock %}
+    </div>
 {% endblock %}
 

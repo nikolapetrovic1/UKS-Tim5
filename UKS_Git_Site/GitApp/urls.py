@@ -110,6 +110,11 @@ urlpatterns = (
         path(
             "create_comment/<int:task_id>", views.create_comment, name="create_comment"
         ),
+        path(
+            "create_reaction/<int:comment_id>/<str:reaction_type>",
+            views.create_reaction,
+            name="create_reaction",
+        ),
     ]
     + repo_patterns
     + issue_patterns
