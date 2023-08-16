@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load bootstrap_icons %}
+
 {% block content %}
   <div class="row">
     <h2>{{repository.name}}</h2>
@@ -20,9 +22,9 @@
     {% if repository.forked_from %}
       <p> Forked from <a href="{% url 'single_repository' repository_id=repository.forked_from.id %}">{{repository.forked_from.name}}</a></p>
     {% endif %}
-    {% bs-icon 'star' %}
   </div>
   {{repository.developers}}
+  {% bs_icon 'star' %}
   <p>Stars: {{star_count}}</p>
 
   {% if request.user.is_authenticated %}

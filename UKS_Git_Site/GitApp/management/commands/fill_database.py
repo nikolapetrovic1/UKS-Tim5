@@ -92,10 +92,10 @@ class Command(BaseCommand):
         comm1.save()
 
         Reaction.objects.all().delete()
-        reaction1 = Reaction(id=1, created_by=user1, code="U+1F600", comment=comm1)
-        reaction2 = Reaction(id=2, created_by=user1, code="U+1F44D", comment=comm1)
-        reaction1.save()
-        reaction2.save()
+        # reaction1 = Reaction(id=1, created_by=user1, code="U+1F600", comment=comm1)
+        # reaction2 = Reaction(id=2, created_by=user1, code="U+1F44D", comment=comm1)
+        # reaction1.save()
+        # reaction2.save()
         IssueCreated.objects.all().delete()
         issue_created = IssueCreated(
             created_by=user1,

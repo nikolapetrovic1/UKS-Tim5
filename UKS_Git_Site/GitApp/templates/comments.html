@@ -1,4 +1,6 @@
 {% include "styling.html" %}
+{% load bootstrap_icons %}
+
 {% block comments %}
   {% for comment in comments %}
     <li class="container list-group-item">
@@ -6,7 +8,7 @@
         {{comment}}
       </div>
       <div class="row">
-        <button type="button" class="btn btn-secondary">👍1</button>
+        <button>{% bs_icon 'hand-thumbs-up' %} 1</button>
         <button type="button" class="list-group-item">👎</button>
         <button type="button" class="list-group-item">♥</button>
         <button type="button" class="list-group-item">😂</button
