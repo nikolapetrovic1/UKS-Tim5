@@ -86,27 +86,28 @@ user_patterns = [
 repo_patterns = [
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
     path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
+    path("repo/rename/<int:repository_id>", repo_views.rename_repo, name="rename_repo"),
+    path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
+    path("repo/create", repo_views.create_repository, name="create_repository"),
+    path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
+    path(
+        "repo/<int:repository_id>/issues",
+        repo_views.get_repo_issues,
+        name="repo_issues",
+    ),
+    path(
+        "<int:user_id>/repos",
+        repo_views.get_repos_by_user_id,
+        name="repos_by_user_id",
+    ),
 ]
 
 urlpatterns = (
     [
         path("", views.index, name="index"),
-        path("repo/create", repo_views.create_repository, name="create_repository"),
-        path("repo/<int:repository_id>/", views.single_repo, name="single_repository"),
-        path(
-            "repo/<int:repository_id>/issues",
-            repo_views.get_repo_issues,
-            name="repo_issues",
-        ),
         path("testredispage/", views.cached_initial, name="test_redis_page"),
         path("new_star/<int:repository_id>", views.new_star, name="new_star"),
         path("delete_star/<int:star_id>", views.delete_star, name="delete_star"),
-        path(
-            "<int:user_id>/repos",
-            repo_views.get_repos_by_user_id,
-            name="repos_by_user_id",
-        ),
-        path("repo/rename", repo_views.rename_repo, name="rename_repo"),
         path(
             "create_comment/<int:task_id>", views.create_comment, name="create_comment"
         ),

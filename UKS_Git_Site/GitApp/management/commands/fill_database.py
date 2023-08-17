@@ -54,6 +54,16 @@ class Command(BaseCommand):
         r3 = Repository(id=3, name="Repo3", lead=user1)
         r3.save()
 
+        Branch.objects.all().delete()
+        b1 = Branch(repository=r1, name="main")
+        b2 = Branch(repository=r1, name="develop")
+        b1.save()
+        b2.save()
+
+        DefautBranch.objects.all().delete()
+        db1 = DefautBranch(repository=r1, branch=b1)
+        db1.save()
+
         Milestone.objects.all().delete()
         milestone1 = Milestone(
             id=1,

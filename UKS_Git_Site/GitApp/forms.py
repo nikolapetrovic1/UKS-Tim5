@@ -96,7 +96,7 @@ class RenameRepoForm(BasicFormStyle):
 
     class Meta:
         model = Repository
-        fields = ["name"]
+        fields = ["name","developers"]
 
 
 class IssueForm(BasicFormStyle):
