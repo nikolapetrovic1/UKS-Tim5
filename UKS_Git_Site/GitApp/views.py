@@ -47,24 +47,6 @@ def add_users_to_repo(request, repository_id, user_id):
     return render(request, "add_users.html", {"repo": repo.developers, "user": user})
 
 
-def single_repo(request, repository_id):
-    repo = get_object_or_404(Repository, id=repository_id)
-    star_count = Star.objects.filter(repository=repo).count()
-    milestones = Milestone.objects.filter(repository=repo)
-    issues = Issue.objects.filter(repository=repo)
-    return render(
-        request,
-        "repository_page.html",
-        {
-            "repository": repo,
-            "star_count": star_count,
-            "issues": issues,
-            "milestones": milestones,
-            "labels": repo.labels.all(),
-        },
-    )
-
-
 @login_required()
 def add_users_to_repo(request, repository_id, user_id):
     owner = get_object_or_404(User, id=request.user.id)

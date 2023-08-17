@@ -82,6 +82,18 @@ class Branch(models.Model):
     name = models.CharField(max_length=200)
 
 
+class DefautBranch(models.Model):
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    last_commit_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Default branch - {self.branch.name}"
+
+    class Meta:
+        unique_together = ("repository", "branch")
+
+
 class Commit(models.Model):
     date_time = models.DateTimeField(max_length=200)
     log_message = models.CharField(max_length=200)
