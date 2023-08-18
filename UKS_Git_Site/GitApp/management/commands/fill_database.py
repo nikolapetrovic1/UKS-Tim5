@@ -60,8 +60,8 @@ class Command(BaseCommand):
         b1.save()
         b2.save()
 
-        DefautBranch.objects.all().delete()
-        db1 = DefautBranch(repository=r1, branch=b1)
+        DefaultBranch.objects.all().delete()
+        db1 = DefaultBranch(repository=r1, branch=b1)
         db1.save()
 
         Milestone.objects.all().delete()

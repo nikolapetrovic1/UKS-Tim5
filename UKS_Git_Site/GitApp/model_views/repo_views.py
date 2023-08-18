@@ -1,29 +1,29 @@
 from datetime import date
+from random import betavariate
 from django.shortcuts import get_object_or_404, render, redirect
 
 from ..utils import milestone_progress, user_in_repository
 
 from ..views import create_form_view
 
-from ..forms import IssueForm, RepositoryForm, RenameRepoForm
+from ..forms import DefaultBranchForm, RepositoryForm, RenameRepoForm, CreateBranchForm
 from ..models import (
     Branch,
-    DefautBranch,
+    DefaultBranch,
     Repository,
     Issue,
     Milestone,
     User,
-    Label,
-    IssueCreated,
     Star,
 )
 from django.contrib.auth.decorators import login_required
 from copy import deepcopy
+from django.http import HttpResponse
 
 
 def single_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    default_branch = DefautBranch.objects.filter(repository=repo).first()
+    default_branch = DefaultBranch.objects.filter(repository=repo).first()
     branches = Branch.objects.filter(repository=repo)
     star_count = Star.objects.filter(repository=repo).count()
     milestones = Milestone.objects.filter(repository=repo)
@@ -105,3 +105,48 @@ def fork_repo(request, repository_id):
 @login_required()
 def watch_repo(request, repository_id):
     pass
+
+
+@login_required
+def create_branch(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    branch = Branch(repository=repo)
+    if request.method == "POST":
+        form = CreateBranchForm(
+            request.POST,
+            instance=branch,
+        )
+        if form.is_valid():
+            if Branch.objects.filter(
+                repository=repo, name=form.cleaned_data["name"]
+            ).exists():
+                return HttpResponse("Branch with same name already exists", status=403)
+            form.save()
+            return redirect("single_repository", repository_id=repository_id)
+    else:
+        form = CreateBranchForm(
+            instance=branch,
+        )
+        return render(request, "create_form.html", {"form": form})
+
+
+@login_required
+def select_default_branch(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    default_branch = DefaultBranch.objects.filter(repository=repo).first()
+    branches = Branch.objects.filter(repository=repo)
+    if request.method == "POST":
+        form = DefaultBranchForm(
+            request.POST,
+            branches=branches,
+            instance=default_branch,
+        )
+        if form.is_valid():
+            form.save()
+            return redirect("single_repository", repository_id=repository_id)
+    else:
+        form = DefaultBranchForm(
+            branches=branches,
+            instance=default_branch,
+        )
+        return render(request, "create_form.html", {"form": form})

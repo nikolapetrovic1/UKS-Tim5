@@ -7,11 +7,22 @@
                 {% if issue.state == "CL" %}
                     <span class="badge badge-secondary"> CLOSED </span>
                 {% else %}
-                    <span class="badge badge-primary"> CLOSED </span>
+                    <span class="badge badge-primary"> OPEN </span>
                 {% endif %}
             </p>
             <div class="col-7 text-end">
-                <a href="{% url 'update_issue' repository_id=issue.repository_id issue_id=issue.id %}"><button class="btn btn-success">Edit issue</button></a>
+                <a href="{% url 'update_issue' repository_id=issue.repository_id issue_id=issue.id %}">
+                    <button class="btn btn-primary">Edit issue</button>
+                </a>
+                {% if issue.state == "CL" %}
+                    <a href="{% url 'open_issue' repository_id=issue.repository_id issue_id=issue.id %}">
+                        <button class="btn btn-primary">Open issue</button>
+                    </a>
+                {% else %}
+                    <a href="{% url 'close_issue' repository_id=issue.repository_id issue_id=issue.id %}">
+                        <button class="btn btn-primary">Close issue</button>
+                    </a>
+                {% endif %}
             </div>
         </div>
 
