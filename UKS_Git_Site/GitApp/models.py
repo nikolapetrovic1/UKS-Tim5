@@ -81,11 +81,13 @@ class Branch(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return f"{self.name}"
 
-class DefautBranch(models.Model):
+
+class DefaultBranch(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    last_commit_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Default branch - {self.branch.name}"
@@ -184,15 +186,11 @@ class IssueCreated(Event):
 
 
 class IssueClosed(Event):
-    issue_id = models.ForeignKey(Issue, on_delete=models.DO_NOTHING)
-
     def __str__(self):
         return f"Issue closed by {self.created_by} on {self.date_time.date()}"
 
 
 class IssueOpened(Event):
-    issue_id = models.ForeignKey(Issue, on_delete=models.DO_NOTHING)
-
     def __str__(self):
         return f"Issue open by {self.created_by} on {self.date_time.date()}"
 

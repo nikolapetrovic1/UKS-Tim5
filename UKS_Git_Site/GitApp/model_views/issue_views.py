@@ -6,7 +6,9 @@ from GitApp.models import (
     Milestone,
     Label,
     Comment,
-    Reaction,
+    IssueState,
+    IssueClosed,
+    IssueOpened,
 )
 from django.shortcuts import get_object_or_404, render, redirect
 from GitApp.forms import IssueForm, CommentForm
@@ -104,9 +106,28 @@ def update_issue(request, repository_id, issue_id):
 
 @login_required
 def close_issue(request, repository_id, issue_id):
-    pass
+    repo = get_object_or_404(Repository, id=repository_id)
+    issue = get_object_or_404(Issue, id=issue_id, repository=repo)
+    issue.state = IssueState.CLOSED
+    issue.save()
+    IssueClosed(
+        created_by=request.user,
+        entity_type="issue",
+        entity_id=issue.id,
+    ).save()
+    IssueClosed()
+    return redirect("issue_page", repository_id=repository_id, issue_id=issue_id)
 
 
 @login_required
 def open_issue(request, repository_id, issue_id):
-    pass
+    repo = get_object_or_404(Repository, id=repository_id)
+    issue = get_object_or_404(Issue, id=issue_id, repository=repo)
+    issue.state = IssueState.OPEN
+    issue.save()
+    IssueOpened(
+        created_by=request.user,
+        entity_type="issue",
+        entity_id=issue.id,
+    ).save()
+    return redirect("issue_page", repository_id=repository_id, issue_id=issue_id)

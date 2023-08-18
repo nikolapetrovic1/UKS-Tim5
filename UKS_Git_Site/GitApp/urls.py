@@ -19,6 +19,16 @@ issue_patterns = [
         issue_views.update_issue,
         name="update_issue",
     ),
+    path(
+        "repo/<int:repository_id>/issue/<int:issue_id>/close",
+        issue_views.close_issue,
+        name="close_issue",
+    ),
+    path(
+        "repo/<int:repository_id>/issue/<int:issue_id>/open",
+        issue_views.open_issue,
+        name="open_issue",
+    ),
 ]
 
 
@@ -99,6 +109,16 @@ repo_patterns = [
         "<int:user_id>/repos",
         repo_views.get_repos_by_user_id,
         name="repos_by_user_id",
+    ),
+    path(
+        "repo/<int:repository_id>/default_branch",
+        repo_views.select_default_branch,
+        name="select_default_branch",
+    ),
+    path(
+        "repo/<int:repository_id>/create_branch",
+        repo_views.create_branch,
+        name="create_branch",
     ),
 ]
 

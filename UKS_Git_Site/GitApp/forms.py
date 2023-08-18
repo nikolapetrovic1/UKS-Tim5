@@ -14,7 +14,7 @@ from django.forms import (
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
-from .models import Comment, User, Milestone, Repository, Issue
+from .models import Comment, User, Milestone, Repository, Issue, DefaultBranch, Branch
 
 
 class BasicFormStyle(ModelForm):
@@ -96,7 +96,7 @@ class RenameRepoForm(BasicFormStyle):
 
     class Meta:
         model = Repository
-        fields = ["name","developers"]
+        fields = ["name", "developers"]
 
 
 class IssueForm(BasicFormStyle):
@@ -124,3 +124,27 @@ class CommentForm(BasicFormStyle):
     class Meta:
         model = Comment
         fields = ["content"]
+
+
+class CreateBranchForm(BasicFormStyle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Branch
+        fields = ["name"]
+
+
+class DefaultBranchForm(BasicFormStyle):
+    def __init__(self, *args, branches, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["branch"] = ModelChoiceField(
+            queryset=branches, required=True, empty_label=None
+        )
+
+    class Meta:
+        model = DefaultBranch
+        fields = ["branch"]
+        labels = {
+            "branch": "Select Default Branch",
+        }
