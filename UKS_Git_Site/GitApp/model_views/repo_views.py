@@ -6,10 +6,17 @@ from ..utils import milestone_progress, user_in_repository
 
 from ..views import create_form_view
 
-from ..forms import DefaultBranchForm, RepositoryForm, RenameRepoForm, CreateBranchForm
+from ..forms import (
+    DefaultBranchForm,
+    PullRequestForm,
+    RepositoryForm,
+    RenameRepoForm,
+    CreateBranchForm,
+)
 from ..models import (
     Branch,
     DefaultBranch,
+    PullRequest,
     Repository,
     Issue,
     Milestone,
@@ -28,6 +35,7 @@ def single_repo(request, repository_id):
     star_count = Star.objects.filter(repository=repo).count()
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
+    pull_requests = PullRequest.objects.filter(repository=repo)
     return render(
         request,
         "repository_page.html",
@@ -39,6 +47,7 @@ def single_repo(request, repository_id):
             "labels": repo.labels.all(),
             "default_branch": default_branch,
             "branches": branches,
+            "pull_requests": pull_requests,
         },
     )
 
@@ -150,3 +159,27 @@ def select_default_branch(request, repository_id):
             instance=default_branch,
         )
         return render(request, "create_form.html", {"form": form})
+
+
+@login_required
+def create_pull_request(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    branches = Branch.objects.filter(repository=repo)
+    pull_request = PullRequest(creator=request.user, repository=repo)
+    if request.method == "POST":
+        form = PullRequestForm(request.POST, branches=branches, instance=pull_request)
+        if form.is_valid():
+            form.save()
+            return redirect("single_repository", repository_id=repository_id)
+    else:
+        form = PullRequestForm(
+            branches=branches,
+            instance=pull_request,
+        )
+        return render(request, "create_form.html", {"form": form})
+
+
+def get_pull_request(request, repository_id, pull_request_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
+    return render(request, "pull_request.html", {"pull_request": pull_request})

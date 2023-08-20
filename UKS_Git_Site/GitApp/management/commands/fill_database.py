@@ -96,6 +96,11 @@ class Command(BaseCommand):
         issue1.save()
         issue2.save()
 
+        PullRequest.objects.all().delete()
+
+        pr1 = PullRequest(id=3, source=b2, target=b1, repository=r1, creator=user1)
+        pr1.save()
+
         Comment.objects.all().delete()
 
         comm1 = Comment(id=1, created_by=user1, content="Great issue!!", task=issue1)

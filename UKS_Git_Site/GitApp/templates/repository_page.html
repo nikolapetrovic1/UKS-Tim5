@@ -41,7 +41,7 @@
     <li class="nav-item">
       <a
         class="nav-link active"
-        id="home-tab"
+        id="issue-tab"
         data-toggle="tab"
         href="#issues"
         role="tab"
@@ -50,6 +50,19 @@
         Issues
       </a>
     </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="pull-request-tab"
+        data-toggle="tab"
+        href="#pull_requests"
+        role="tab"
+        aria-controls="pull_requests"
+        aria-selected="true">
+        Pull requests
+      </a>
+    </li>
+
     <li class="nav-item">
       <a
         class="nav-link"
@@ -80,10 +93,12 @@
         class="tab-pane fade show active"
         id="issues"
         role="tabpanel"
-        aria-labelledby="issue-tab"
       >
         {% include 'issues.html' with issues=issues %}
         <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
+      </div>
+      <div class="tab-pane fade" id="pull_requests" role="tabpanel">
+        {% include 'pull_requests.html' with pull_requests=pull_requests %}
       </div>
       <div class="tab-pane fade" id="milestones" role="tabpanel">
         {% include 'milestones.html' with milestones=milestones%}
@@ -102,14 +117,5 @@
     ...
   </div>
   {% endcomment %}
-    <div
-      class="tab-pane fade"
-      id="settings"
-      role="tabpanel"
-      aria-labelledby="pills-contact-tab"
-    >
-      {% include 'settings.html' with repository=repository %}
-    </div>
-  </div>
 
 {% endblock %}

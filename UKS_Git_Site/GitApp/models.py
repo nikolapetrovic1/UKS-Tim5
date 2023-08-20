@@ -130,6 +130,7 @@ class Task(models.Model):
         Milestone, blank=True, null=True, on_delete=models.SET_NULL
     )
     assignees = models.ManyToManyField(User, blank=True, related_name="task_assignee")
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
 
 
 #
@@ -144,6 +145,9 @@ class Task(models.Model):
 
 
 class PullRequest(Task):
+    state = models.CharField(
+        max_length=2, choices=State.STATE_CHOICES, default=IssueState.OPEN
+    )
     target = models.ForeignKey(
         Branch,
         on_delete=models.CASCADE,
@@ -154,13 +158,13 @@ class PullRequest(Task):
         on_delete=models.CASCADE,
         related_name="source_branch",
     )
-
+    def __str__(self):
+        return f"Pull requests source - {self.source} target - {self.target}"
 
 class Issue(Task):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     date_created = models.DateField(auto_now=True)
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     labels = models.ManyToManyField(Label)
     state = models.CharField(
         max_length=2, choices=IssueState.STATE_CHOICES, default=IssueState.OPEN

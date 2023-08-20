@@ -1,0 +1,7 @@
+{% include "styling.html" %} {%block test %} {% for pull_request in pull_requests %}
+  <li class="list-group-item">
+    <a href="{% url 'pull_request_page' repository_id=pull_request.repository_id pull_request_id=pull_request.id %}">
+      {{pull_request}}
+    </a>
+  </li>
+{% endfor %} {% endblock %}
