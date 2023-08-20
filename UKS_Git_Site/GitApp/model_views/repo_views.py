@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from ..utils import milestone_progress, user_in_repository
 
-from ..views import create_form_view
+from ..views import create_form_view, get_reaction_count
 
 from ..forms import (
     DefaultBranchForm,
@@ -22,6 +22,7 @@ from ..models import (
     Milestone,
     User,
     Star,
+    Comment,
 )
 from django.contrib.auth.decorators import login_required
 from copy import deepcopy
@@ -166,13 +167,24 @@ def create_pull_request(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     branches = Branch.objects.filter(repository=repo)
     pull_request = PullRequest(creator=request.user, repository=repo)
+    milestones = Milestone.objects.filter(repository=repo)
     if request.method == "POST":
-        form = PullRequestForm(request.POST, branches=branches, instance=pull_request)
+        form = PullRequestForm(
+            request.POST,
+            developers=repo.developers,
+            milestones=milestones,
+            branches=branches,
+            instance=pull_request,
+        )
         if form.is_valid():
+            if form.cleaned_data["target"] == form.cleaned_data["source"]:
+                return HttpResponse("Source different from target", status=403)
             form.save()
             return redirect("single_repository", repository_id=repository_id)
     else:
         form = PullRequestForm(
+            developers=repo.developers,
+            milestones=milestones,
             branches=branches,
             instance=pull_request,
         )
@@ -182,4 +194,15 @@ def create_pull_request(request, repository_id):
 def get_pull_request(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
-    return render(request, "pull_request.html", {"pull_request": pull_request})
+    comments = Comment.objects.filter(task=pull_request)
+
+    for comment in comments:
+        if request.user.is_authenticated:
+            comment.reactions = get_reaction_count(comment, request.user)
+        else:
+            comment.reactions = get_reaction_count(comment, None)
+    return render(
+        request,
+        "pull_request.html",
+        {"pull_request": pull_request, "comments": comments},
+    )

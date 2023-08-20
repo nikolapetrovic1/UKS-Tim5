@@ -160,7 +160,7 @@ class DefaultBranchForm(BasicFormStyle):
 
 
 class PullRequestForm(BasicFormStyle):
-    def __init__(self, *args, branches, **kwargs):
+    def __init__(self, *args, developers, milestones, branches, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["target"] = ModelChoiceField(
             queryset=branches, required=True, empty_label=None
@@ -168,7 +168,13 @@ class PullRequestForm(BasicFormStyle):
         self.fields["source"] = ModelChoiceField(
             queryset=branches, required=True, empty_label=None
         )
+        self.fields["assignees"] = ModelMultipleChoiceField(
+            queryset=developers, widget=CheckboxSelectMultiple, required=False
+        )
+        self.fields["milestone"] = ModelChoiceField(
+            queryset=milestones, required=False, empty_label="Select Milestone"
+        )
 
     class Meta:
         model = PullRequest
-        fields = ["target", "source"]
+        fields = ["target", "source", "assignees", "milestone"]

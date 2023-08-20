@@ -146,7 +146,7 @@ class Task(models.Model):
 
 class PullRequest(Task):
     state = models.CharField(
-        max_length=2, choices=State.STATE_CHOICES, default=IssueState.OPEN
+        max_length=2, choices=State.STATE_CHOICES, default=State.OPEN
     )
     target = models.ForeignKey(
         Branch,
@@ -158,8 +158,10 @@ class PullRequest(Task):
         on_delete=models.CASCADE,
         related_name="source_branch",
     )
+
     def __str__(self):
-        return f"Pull requests source - {self.source} target - {self.target}"
+        return f"Pull requests '{self.state}' source - {self.source} target - {self.target}"
+
 
 class Issue(Task):
     title = models.CharField(max_length=200)
