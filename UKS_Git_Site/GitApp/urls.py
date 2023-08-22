@@ -120,6 +120,16 @@ repo_patterns = [
         repo_views.create_branch,
         name="create_branch",
     ),
+    path(
+        "repo/<int:repository_id>/pull_request",
+        repo_views.create_pull_request,
+        name="create_pull_request",
+    ),
+    path(
+        "repo/<int:repository_id>/pull_request/<int:pull_request_id>",
+        repo_views.get_pull_request,
+        name="pull_request_page",
+    ),
 ]
 
 urlpatterns = (

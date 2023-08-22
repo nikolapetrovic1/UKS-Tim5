@@ -14,7 +14,16 @@ from django.forms import (
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
-from .models import Comment, User, Milestone, Repository, Issue, DefaultBranch, Branch
+from .models import (
+    Comment,
+    PullRequest,
+    User,
+    Milestone,
+    Repository,
+    Issue,
+    DefaultBranch,
+    Branch,
+)
 
 
 class BasicFormStyle(ModelForm):
@@ -148,3 +157,24 @@ class DefaultBranchForm(BasicFormStyle):
         labels = {
             "branch": "Select Default Branch",
         }
+
+
+class PullRequestForm(BasicFormStyle):
+    def __init__(self, *args, developers, milestones, branches, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["target"] = ModelChoiceField(
+            queryset=branches, required=True, empty_label=None
+        )
+        self.fields["source"] = ModelChoiceField(
+            queryset=branches, required=True, empty_label=None
+        )
+        self.fields["assignees"] = ModelMultipleChoiceField(
+            queryset=developers, widget=CheckboxSelectMultiple, required=False
+        )
+        self.fields["milestone"] = ModelChoiceField(
+            queryset=milestones, required=False, empty_label="Select Milestone"
+        )
+
+    class Meta:
+        model = PullRequest
+        fields = ["target", "source", "assignees", "milestone"]
