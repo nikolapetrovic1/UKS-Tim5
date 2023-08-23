@@ -145,7 +145,6 @@ repo_patterns = [
 urlpatterns = (
     [
         path("", views.index, name="index"),
-        path("testredispage/", views.cached_initial, name="test_redis_page"),
         path("new_star/<int:repository_id>", views.new_star, name="new_star"),
         path("delete_star/<int:star_id>", views.delete_star, name="delete_star"),
         path(

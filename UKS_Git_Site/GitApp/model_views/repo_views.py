@@ -38,7 +38,9 @@ def single_repo_branch(request, repository_id, branch_id):
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
     commits = Commit.objects.filter(repository=repo, branch=branch)
-    starred = Star.objects.filter(repository=repo, user=request.user).first()
+    starred = None
+    if request.user.is_authenticated:
+        starred = Star.objects.filter(repository=repo, user=request.user).first()
     return render(
         request,
         "repository_page.html",
@@ -67,8 +69,9 @@ def single_repo(request, repository_id):
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
     commits = Commit.objects.filter(repository=repo, branch=default_branch.branch)
-    starred = Star.objects.filter(repository=repo, user=request.user).first()
-    print(repo.developers)
+    starred = None
+    if request.user.is_authenticated:
+        starred = Star.objects.filter(repository=repo, user=request.user).first()
     return render(
         request,
         "repository_page.html",
@@ -83,6 +86,7 @@ def single_repo(request, repository_id):
             "pull_requests": pull_requests,
             "commits": commits,
             "starred": starred,
+            "branch_id": default_branch.branch.id,
         },
     )
 
@@ -112,9 +116,18 @@ def edit_repo(request, repository_id):
 def create_repository(request):
     lead = get_object_or_404(User, id=request.user.id)
     repo = Repository(lead=lead)
-    return create_form_view(
-        request, repo, RepositoryForm, redirect("index"), "create_form.html"
-    )
+    if request.method == "POST":
+        form = RepositoryForm(request.POST, instance=repo)
+        if form.is_valid():
+            repo = form.save()
+            branch = Branch(name="main", repository=repo)
+            branch.save()
+            default_branch = DefaultBranch(branch=branch, repository=repo)
+            default_branch.save()
+            return redirect("single_repository", repo.id)
+    else:
+        form = RepositoryForm(instance=repo)
+        return render(request, "create_form.html", {"form": form})
 
 
 def get_repo_issues(request, repository_id):
@@ -194,6 +207,7 @@ def select_default_branch(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     default_branch = DefaultBranch.objects.filter(repository=repo).first()
     branches = Branch.objects.filter(repository=repo)
+    print(branches)
     if request.method == "POST":
         form = DefaultBranchForm(
             request.POST,

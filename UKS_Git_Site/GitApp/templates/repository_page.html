@@ -2,9 +2,9 @@
 {% load bootstrap_icons %}
 
 {% block content %}
-  <div class="row">
-    <h2>{{repository.name}}  </h2>
-    <div class="float-right">
+  <div class="row p-1">
+    <h1>{{repository.name}}</h1>
+    <div class="ml-auto">
       <a href="{% url 'fork_repo' repository.id %}">
         <button class="btn btn-success">Fork</button>
         {% if request.user.is_authenticated %}
@@ -22,13 +22,14 @@
       </a>
     </div>
   </div>
-  <div class="row mg-1">
-    {% for label in labels %}
-      <span class="label badge badge-secondary" style="background-color: {{label.color}}">{{label.name}}</span>
-    {% endfor %}
-  </div>
-
-  <div class="row">
+  <div class="row p-1">
+    {% comment %} 
+    <div class="row">
+      {% for label in labels %}
+        <span class="label badge badge-secondary" style="background-color: {{label.color}}">{{label.name}}</span>
+      {% endfor %}
+    </div>
+    {% endcomment %}
     <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
       {% for branch in branches %}
         <option value="{% url 'single_repository_branch' repository_id=repository.id branch_id=branch.id %}"
@@ -36,8 +37,10 @@
         >{{branch.name}}</option>
       {% endfor %}
     </select>
+    <div class="ml-auto">
+      <p>Stars: {{star_count}}</p>
+    </div>
   </div>
-  <p>Stars: {{star_count}}</p>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
       <a
@@ -99,7 +102,6 @@
       >Settings</a>
     </li>
   </ul>
-
   <div class="tab-content" id="myTabContent">
     <div
       class="tab-pane fade show active"

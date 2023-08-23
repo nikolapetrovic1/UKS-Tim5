@@ -41,23 +41,6 @@ def index(request):
     return render(request, "index_initial.html")
 
 
-@cache_page(CACHE_TTL)
-def cached_initial(request):
-    redis.Redis(host="uks_tim5_redis", port=6379)
-    repoNum = len(Repository.objects.all())
-    return render(request, "cache_test.html", {"repoNum": repoNum})
-
-
-def add_users_to_repo(request, repository_id, user_id):
-    repo = get_object_or_404(Repository, id=repository_id)
-    user = get_object_or_404(User, id=user_id)
-
-    repo.developers = repo.developers + (",%s" % user)
-    repo.save()
-
-    return render(request, "add_users.html", {"repo": repo.developers, "user": user})
-
-
 @login_required()
 def add_users_to_repo(request, repository_id, user_id):
     owner = get_object_or_404(User, id=request.user.id)

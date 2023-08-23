@@ -161,7 +161,7 @@ class CreateBranchForm(BasicFormStyle):
 class DefaultBranchForm(BasicFormStyle):
     def __init__(self, *args, branches, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["branches"] = ModelChoiceField(
+        self.fields["branch"] = ModelChoiceField(
             queryset=branches, required=True, empty_label=None
         )
 
