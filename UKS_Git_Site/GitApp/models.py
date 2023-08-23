@@ -138,7 +138,6 @@ class Task(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
 
 
-
 class PullRequest(Task):
     state = models.CharField(
         max_length=2, choices=State.STATE_CHOICES, default=State.OPEN
@@ -189,6 +188,14 @@ class IssueCreated(Event):
 
     def __str__(self):
         return f"{self.title} created by {self.created_by} on {self.date_time.date()}"
+
+
+class IssueUpdated(Event):
+    title = models.CharField(max_length=200)
+    changed_fields = models.TextField()
+
+    def __str__(self):
+        return f"{self.title} updated fields: {self.changed_fields} by {self.created_by} on {self.date_time.date()}"
 
 
 class IssueClosed(Event):
