@@ -16,6 +16,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from .models import (
     Comment,
+    Commit,
     PullRequest,
     User,
     Milestone,
@@ -99,9 +100,13 @@ class RepositoryForm(BasicFormStyle):
         fields = ["name", "private"]
 
 
-class RenameRepoForm(BasicFormStyle):
-    def __init__(self, *args, **kwargs):
+class EditRepoForm(BasicFormStyle):
+    def __init__(self, *args, developers, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields["developers"] = ModelMultipleChoiceField(
+            queryset=developers, widget=CheckboxSelectMultiple, required=False
+        )
 
     class Meta:
         model = Repository
@@ -136,8 +141,17 @@ class CommentForm(BasicFormStyle):
 
 
 class CreateBranchForm(BasicFormStyle):
-    def __init__(self, *args, **kwargs):
+    from_branch = ModelChoiceField(
+        queryset=None,
+        required=True,
+        empty_label=None,
+    )
+
+    def __init__(self, *args, branches, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["from_branch"] = ModelChoiceField(
+            queryset=branches, required=True, empty_label=None
+        )
 
     class Meta:
         model = Branch
@@ -178,3 +192,12 @@ class PullRequestForm(BasicFormStyle):
     class Meta:
         model = PullRequest
         fields = ["target", "source", "assignees", "milestone"]
+
+
+class CommitForm(BasicFormStyle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Commit
+        fields = ["hash", "log_message"]

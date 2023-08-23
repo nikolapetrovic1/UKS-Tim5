@@ -14,23 +14,23 @@ from .forms import UserForm, UserLoginForm, UserUpdateForm
 
 
 @login_required()
-@permission_required('GitApp.test_access', raise_exception=True)
+@permission_required("GitApp.test_access", raise_exception=True)
 def test(request):
-    return render(request, 'user_profile.html')
+    return render(request, "user_profile.html")
 
 
 @login_required()
 def user_profile(request):
     user = get_object_or_404(User, id=request.user.id)
     stars = Star.objects.filter(user=user)
-    return render(request, 'user_profile.html', {"user": user, "stars": stars})
+    return render(request, "user_profile.html", {"user": user, "stars": stars})
 
 
 @login_required()
 def delete_user(request):
     user = get_object_or_404(User, id=request.user.id)
     user.delete()
-    return redirect('index')
+    return redirect("index")
 
 
 def user_login(request):
@@ -50,46 +50,45 @@ def user_login(request):
 def user_logout(request):
     if request.user.is_authenticated:
         logout(request)
-        return redirect('index')
+        return redirect("index")
     raise PermissionDenied()
 
 
-def user_register(request, template_name='user_form.html'):
+def user_register(request, template_name="user_form.html"):
     if request.method == "POST":
         form = UserForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
-            return redirect('index')
-    form = UserForm()
-    return render(request, template_name, {'form': form})
+            return redirect("index")
+    else:
+        form = UserForm()
+        return render(request, template_name, {"form": form})
 
 
-login_required()
-
-
-def user_update(request, template_name='user_form.html'):
-    if request.method == 'POST':
+@login_required
+def user_update(request):
+    if request.method == "POST":
         form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('user_profile')
+            return redirect("user_profile")
     else:
         form = UserUpdateForm(instance=request.user)
-        return render(request, template_name, {'form': form})
+        return render(request, "user_form.html", {"form": form})
 
 
 @login_required()
 def user_change_password(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PasswordChangeForm(request.user, data=request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            return redirect('user_profile')
+            return redirect("user_profile")
         else:
-            return redirect('change_password')
+            return redirect("change_password")
     else:
         form = PasswordChangeForm(user=request.user)
-        return render(request, 'password_reset.html', {'form': form})
+        return render(request, "password_reset.html", {"form": form})

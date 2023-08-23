@@ -1,13 +1,8 @@
-{% extends "base.html" %} {% block content %}
-
-<p>Hello, world. You're at the polls index.</p>
-<br /><br />
-<ul>
-  <li><a href="{% url 'test_redis_page'  %}">Link to cached page</a></li>
-  <li><a href="{% url 'login'  %}">Login Page</a></li>
-  <li><a href="{% url 'logout'  %}">Logout Page</a></li>
-  <li><a href="{% url 'user_profile'  %}">Profile</a></li>
-</ul>
-<a href="{% url 'test'  %}">Test acess(works for user1)</a>
-
+{% extends "base.html" %}
+{% block content %}
+  <ul>
+    <li><a href="{% url 'login'  %}">Login Page</a></li>
+    <li><a href="{% url 'logout'  %}">Logout Page</a></li>
+    <li><a href="{% url 'user_profile'  %}">Profile</a></li>
+  </ul>
 {% endblock %}

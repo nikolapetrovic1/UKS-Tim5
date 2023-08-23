@@ -7,7 +7,7 @@
         <a href="{% url 'delete_repo' repository_id=repository.id %}">
           <button class="btn btn-danger">Delete repository</button>
         </a>
-        <a href="{% url 'rename_repo' repository_id=repository.id %}">
+        <a href="{% url 'edit_repo' repository_id=repository.id %}">
           <button class="btn btn-success">Edit repository</button>
         </a>
         <a href="{% url 'select_default_branch' repository_id=repository.id %}">

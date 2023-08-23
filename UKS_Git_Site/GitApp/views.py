@@ -2,8 +2,19 @@ from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 
-from GitApp.forms import CommentForm
-from .models import Issue, Label, Repository, User, Star, Milestone, Comment, Reaction
+from GitApp.forms import CommentForm, CommitForm
+from .models import (
+    Branch,
+    Issue,
+    Label,
+    Repository,
+    User,
+    Star,
+    Milestone,
+    Comment,
+    Reaction,
+    Commit,
+)
 
 
 from django.conf import settings
@@ -30,23 +41,6 @@ def index(request):
     return render(request, "index_initial.html")
 
 
-@cache_page(CACHE_TTL)
-def cached_initial(request):
-    redis.Redis(host="uks_tim5_redis", port=6379)
-    repoNum = len(Repository.objects.all())
-    return render(request, "cache_test.html", {"repoNum": repoNum})
-
-
-def add_users_to_repo(request, repository_id, user_id):
-    repo = get_object_or_404(Repository, id=repository_id)
-    user = get_object_or_404(User, id=user_id)
-
-    repo.developers = repo.developers + (",%s" % user)
-    repo.save()
-
-    return render(request, "add_users.html", {"repo": repo.developers, "user": user})
-
-
 @login_required()
 def add_users_to_repo(request, repository_id, user_id):
     owner = get_object_or_404(User, id=request.user.id)
@@ -69,16 +63,9 @@ def new_star(request, repository_id):
 
 @login_required()
 def delete_star(request, star_id):
-    star = get_object_or_404(Star, id=star_id)
+    star = get_object_or_404(Star, id=star_id, user=request.user)
     star.delete()
-
-    user = get_object_or_404(User, id=request.user.id)
-
-    template = loader.get_template("user_profile.html")
-
-    context = {"user": user, "stars": user.stars.all()}
-
-    return HttpResponse(template.render(context, request))
+    return redirect_back(request)
 
 
 def get_labels(request):
@@ -165,12 +152,21 @@ def create_reaction(request, comment_id, reaction_type):
     return redirect_back(request)
 
 
-# def create_form(request,FormClass,redirect_page,request_param):
-#     if request.method == 'POST':
-#         form = FormClass(request.POST,instance=request_param)
-#         if form.is_valid():
-#             form.save()
-#             return redirect(redirect_page)
-#     else:
-#         form = FormClass(instance=request_param)
-#         return render(request, template_name, {'form':form})
+@login_required
+def create_commit(request, repository_id, branch_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    branch = get_object_or_404(Branch, id=branch_id, repository=repo)
+    commit = Commit(repository=repo, branch=branch, commiter=request.user)
+    if request.method == "POST":
+        form = CommitForm(
+            request.POST,
+            instance=commit,
+        )
+        if form.is_valid():
+            form.save()
+            return redirect("single_repository", repository_id)
+    else:
+        form = CommitForm(
+            instance=commit,
+        )
+        return render(request, "create_form.html", {"form": form})

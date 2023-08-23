@@ -9,6 +9,7 @@ from GitApp.models import (
     IssueState,
     IssueClosed,
     IssueOpened,
+    IssueUpdated,
 )
 from django.shortcuts import get_object_or_404, render, redirect
 from GitApp.forms import IssueForm, CommentForm
@@ -90,6 +91,15 @@ def update_issue(request, repository_id, issue_id):
             instance=issue,
         )
         if form.is_valid():
+            if form.has_changed():
+                issue_updated = IssueUpdated(
+                    entity_type="issue",
+                    entity_id=issue.id,
+                    created_by=request.user,
+                    title=issue.title,
+                    changed_fields=str(form.changed_data),
+                )
+                issue_updated.save()
             issue = form.save()
             return redirect(
                 "issue_page", repository_id=repository_id, issue_id=issue_id

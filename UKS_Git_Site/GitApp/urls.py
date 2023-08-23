@@ -94,12 +94,17 @@ user_patterns = [
 ]
 
 repo_patterns = [
+    path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
+    path(
+        "repo/<int:repository_id>/tree/<int:branch_id>",
+        repo_views.single_repo_branch,
+        name="single_repository_branch",
+    ),
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
     path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
-    path("repo/rename/<int:repository_id>", repo_views.rename_repo, name="rename_repo"),
+    path("repo/rename/<int:repository_id>", repo_views.edit_repo, name="edit_repo"),
     path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
     path("repo/create", repo_views.create_repository, name="create_repository"),
-    path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
     path(
         "repo/<int:repository_id>/issues",
         repo_views.get_repo_issues,
@@ -126,6 +131,11 @@ repo_patterns = [
         name="create_pull_request",
     ),
     path(
+        "repo/<int:repository_id>/code",
+        repo_views.get_pull_request,
+        name="pull_request_page",
+    ),
+    path(
         "repo/<int:repository_id>/pull_request/<int:pull_request_id>",
         repo_views.get_pull_request,
         name="pull_request_page",
@@ -135,7 +145,6 @@ repo_patterns = [
 urlpatterns = (
     [
         path("", views.index, name="index"),
-        path("testredispage/", views.cached_initial, name="test_redis_page"),
         path("new_star/<int:repository_id>", views.new_star, name="new_star"),
         path("delete_star/<int:star_id>", views.delete_star, name="delete_star"),
         path(
@@ -145,6 +154,11 @@ urlpatterns = (
             "create_reaction/<int:comment_id>/<str:reaction_type>",
             views.create_reaction,
             name="create_reaction",
+        ),
+        path(
+            "create_commit/<int:repository_id>/<int:branch_id>",
+            views.create_commit,
+            name="create_commit",
         ),
     ]
     + repo_patterns
