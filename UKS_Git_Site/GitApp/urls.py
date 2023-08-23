@@ -94,12 +94,17 @@ user_patterns = [
 ]
 
 repo_patterns = [
+    path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
+    path(
+        "repo/<int:repository_id>/tree/<int:branch_id>",
+        repo_views.single_repo_branch,
+        name="single_repository_branch",
+    ),
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
     path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
     path("repo/rename/<int:repository_id>", repo_views.edit_repo, name="edit_repo"),
     path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
     path("repo/create", repo_views.create_repository, name="create_repository"),
-    path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
     path(
         "repo/<int:repository_id>/issues",
         repo_views.get_repo_issues,

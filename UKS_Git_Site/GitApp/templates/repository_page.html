@@ -27,16 +27,16 @@
       <span class="label badge badge-secondary" style="background-color: {{label.color}}">{{label.name}}</span>
     {% endfor %}
   </div>
+
   <div class="row">
-    {{branches}}
-    {{default_branch}}
+    <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+      {% for branch in branches %}
+        <option value="{% url 'single_repository_branch' repository_id=repository.id branch_id=branch.id %}"
+                {% if branch_id == branch.id %} selected{% endif %}
+        >{{branch.name}}</option>
+      {% endfor %}
+    </select>
   </div>
-  <div class="row">
-    {% if repository.forked_from %}
-      <p> Forked from <a href="{% url 'single_repository' repository_id=repository.forked_from.id %}">{{repository.forked_from.name}}</a></p>
-    {% endif %}
-  </div>
-  {{repository.developers}}
   <p>Stars: {{star_count}}</p>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
@@ -85,58 +85,46 @@
         role="tab"
         aria-controls="milestones"
         aria-selected="false"
-      >Milestones</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          id="setting-tab"
-          data-toggle="tab"
-          href="#settings"
-          role="tab"
-          aria-controls="settings"
-          aria-selected="false"
-        >Settings</a>
-      </li>
-    </ul>
+      >Milestones</a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="setting-tab"
+        data-toggle="tab"
+        href="#settings"
+        role="tab"
+        aria-controls="settings"
+        aria-selected="false"
+      >Settings</a>
+    </li>
+  </ul>
 
-    <div class="tab-content" id="myTabContent">
-      <div
-        class="tab-pane fade show active"
-        id="code"
-        role="tabpanel"
-      >
-        {% include 'code_page.html' with commits=commits %}
-        <a href="{% url 'create_commit' repository_id=repository.id branch_id=default_branch.id %}">New commit</a>
-      </div>
-      <div
-        class="tab-pane fade"
-        id="issues"
-        role="tabpanel"
-      >
-        {% include 'issues.html' with issues=issues %}
-        <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
-      </div>
-      <div class="tab-pane fade" id="pull_requests" role="tabpanel">
-        {% include 'pull_requests.html' with pull_requests=pull_requests %}
-      </div>
-      <div class="tab-pane fade" id="milestones" role="tabpanel">
-        {% include 'milestones.html' with milestones=milestones%}
-      </div>
-      <div class="tab-pane fade" id="settings" role="tabpanel">
-        {% include 'settings.html' with repository=repository %}
-      </div>
+  <div class="tab-content" id="myTabContent">
+    <div
+      class="tab-pane fade show active"
+      id="code"
+      role="tabpanel"
+    >
+      {% include 'code_page.html' with commits=commits %}
+      <a href="{% url 'create_commit' repository_id=repository.id branch_id=current_branch.id %}">New commit</a>
     </div>
-  {% comment %}
-  <div
-    class="tab-pane fade"
-    id="pills-contact"
-    role="tabpanel"
-    aria-labelledby="pills-contact-tab"
-  >
-    ...
+    <div
+      class="tab-pane fade"
+      id="issues"
+      role="tabpanel"
+    >
+      {% include 'issues.html' with issues=issues %}
+      <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
+    </div>
+    <div class="tab-pane fade" id="pull_requests" role="tabpanel">
+      {% include 'pull_requests.html' with pull_requests=pull_requests %}
+    </div>
+    <div class="tab-pane fade" id="milestones" role="tabpanel">
+      {% include 'milestones.html' with milestones=milestones%}
+    </div>
+    <div class="tab-pane fade" id="settings" role="tabpanel">
+      {% include 'settings.html' with repository=repository %}
+    </div>
   </div>
-  {% endcomment %}
-
 {% endblock %}

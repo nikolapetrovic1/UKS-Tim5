@@ -141,8 +141,17 @@ class CommentForm(BasicFormStyle):
 
 
 class CreateBranchForm(BasicFormStyle):
-    def __init__(self, *args, **kwargs):
+    from_branch = ModelChoiceField(
+        queryset=None,
+        required=True,
+        empty_label=None,
+    )
+
+    def __init__(self, *args, branches, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["from_branch"] = ModelChoiceField(
+            queryset=branches, required=True, empty_label=None
+        )
 
     class Meta:
         model = Branch
@@ -152,7 +161,7 @@ class CreateBranchForm(BasicFormStyle):
 class DefaultBranchForm(BasicFormStyle):
     def __init__(self, *args, branches, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["branch"] = ModelChoiceField(
+        self.fields["branches"] = ModelChoiceField(
             queryset=branches, required=True, empty_label=None
         )
 

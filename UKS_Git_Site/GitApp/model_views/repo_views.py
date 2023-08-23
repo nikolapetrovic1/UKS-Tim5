@@ -1,7 +1,7 @@
 from datetime import date
 from random import betavariate
 from django.shortcuts import get_object_or_404, render, redirect
-
+from copy import deepcopy
 from ..utils import milestone_progress, user_in_repository
 
 from ..views import create_form_view, get_reaction_count
@@ -26,8 +26,36 @@ from ..models import (
     Commit,
 )
 from django.contrib.auth.decorators import login_required
-from copy import deepcopy
 from django.http import HttpResponse
+
+
+def single_repo_branch(request, repository_id, branch_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    branch = Branch.objects.filter(id=branch_id, repository=repo).first()
+    branches = Branch.objects.filter(repository=repo)
+    star_count = Star.objects.filter(repository=repo).count()
+    milestones = Milestone.objects.filter(repository=repo)
+    issues = Issue.objects.filter(repository=repo)
+    pull_requests = PullRequest.objects.filter(repository=repo)
+    commits = Commit.objects.filter(repository=repo, branch=branch)
+    starred = Star.objects.filter(repository=repo, user=request.user).first()
+    return render(
+        request,
+        "repository_page.html",
+        {
+            "repository": repo,
+            "star_count": star_count,
+            "issues": issues,
+            "milestones": milestones,
+            "labels": repo.labels.all(),
+            "current_branch": branch,
+            "branches": branches,
+            "pull_requests": pull_requests,
+            "commits": commits,
+            "starred": starred,
+            "branch_id": branch_id,
+        },
+    )
 
 
 def single_repo(request, repository_id):
@@ -38,7 +66,7 @@ def single_repo(request, repository_id):
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
-    commits = Commit.objects.filter(repository=repo)
+    commits = Commit.objects.filter(repository=repo, branch=default_branch.branch)
     starred = Star.objects.filter(repository=repo, user=request.user).first()
     print(repo.developers)
     return render(
@@ -50,7 +78,7 @@ def single_repo(request, repository_id):
             "issues": issues,
             "milestones": milestones,
             "labels": repo.labels.all(),
-            "default_branch": default_branch,
+            "current_branch": default_branch,
             "branches": branches,
             "pull_requests": pull_requests,
             "commits": commits,
@@ -129,9 +157,11 @@ def watch_repo(request, repository_id):
 def create_branch(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     branch = Branch(repository=repo)
+    branches = Branch.objects.filter(repository=repo)
     if request.method == "POST":
         form = CreateBranchForm(
             request.POST,
+            branches=branches,
             instance=branch,
         )
         if form.is_valid():
@@ -139,13 +169,24 @@ def create_branch(request, repository_id):
                 repository=repo, name=form.cleaned_data["name"]
             ).exists():
                 return HttpResponse("Branch with same name already exists", status=403)
-            form.save()
+            target_branch = form.save()
+            add_commits_from_branch(form.cleaned_data["from_branch"], target_branch)
             return redirect("single_repository", repository_id=repository_id)
     else:
         form = CreateBranchForm(
+            branches=branches,
             instance=branch,
         )
         return render(request, "create_form.html", {"form": form})
+
+
+def add_commits_from_branch(source_branch, target_branch):
+    commits = Commit.objects.filter(branch=source_branch)
+    for commit in commits:
+        new_commit = deepcopy(commit)
+        new_commit.id = None
+        new_commit.branch = target_branch
+        new_commit.save()
 
 
 @login_required
