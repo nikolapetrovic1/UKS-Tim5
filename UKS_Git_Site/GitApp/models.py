@@ -65,6 +65,11 @@ class Repository(models.Model):
         "self", null=True, blank=True, on_delete=models.SET_NULL
     )
 
+    class Meta:
+        permissions = [
+            ("can_delete_repository", "Can delete repository"),
+        ]
+
 
 class Star(models.Model):
     repository = models.ForeignKey(Repository, null=True, on_delete=models.CASCADE)
@@ -133,16 +138,6 @@ class Task(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
 
 
-#
-# class Event(models.Model):
-#     date_time = models.DateTimeField()
-#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-
-
-# class Comment(Event):
-#     content = models.TextField(max_length=1500)
-#     date_created = models.DateTimeField(auto_now=True)
-
 
 class PullRequest(Task):
     state = models.CharField(
@@ -171,6 +166,11 @@ class Issue(Task):
     state = models.CharField(
         max_length=2, choices=IssueState.STATE_CHOICES, default=IssueState.OPEN
     )
+
+    class Meta:
+        permissions = [
+            ("can_create_issue", "Can create issue"),
+        ]
 
 
 class Event(PolymorphicModel):

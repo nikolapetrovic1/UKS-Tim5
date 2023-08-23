@@ -21,7 +21,6 @@ class Command(BaseCommand):
         )
         # kreiranje grupe
         group, _ = Group.objects.get_or_create(name="test")
-
         group.permissions.add(permission)
 
         # kreiranje jos jednog korisnika koji nije u grupi, te nema permisije
