@@ -96,7 +96,7 @@ user_patterns = [
 repo_patterns = [
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
     path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
-    path("repo/rename/<int:repository_id>", repo_views.rename_repo, name="rename_repo"),
+    path("repo/rename/<int:repository_id>", repo_views.edit_repo, name="edit_repo"),
     path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
     path("repo/create", repo_views.create_repository, name="create_repository"),
     path("repo/<int:repository_id>/", repo_views.single_repo, name="single_repository"),
@@ -126,6 +126,11 @@ repo_patterns = [
         name="create_pull_request",
     ),
     path(
+        "repo/<int:repository_id>/code",
+        repo_views.get_pull_request,
+        name="pull_request_page",
+    ),
+    path(
         "repo/<int:repository_id>/pull_request/<int:pull_request_id>",
         repo_views.get_pull_request,
         name="pull_request_page",
@@ -145,6 +150,11 @@ urlpatterns = (
             "create_reaction/<int:comment_id>/<str:reaction_type>",
             views.create_reaction,
             name="create_reaction",
+        ),
+        path(
+            "create_commit/<int:repository_id>/<int:branch_id>",
+            views.create_commit,
+            name="create_commit",
         ),
     ]
     + repo_patterns

@@ -10,7 +10,7 @@ from ..forms import (
     DefaultBranchForm,
     PullRequestForm,
     RepositoryForm,
-    RenameRepoForm,
+    EditRepoForm,
     CreateBranchForm,
 )
 from ..models import (
@@ -23,6 +23,7 @@ from ..models import (
     User,
     Star,
     Comment,
+    Commit,
 )
 from django.contrib.auth.decorators import login_required
 from copy import deepcopy
@@ -37,6 +38,9 @@ def single_repo(request, repository_id):
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
+    commits = Commit.objects.filter(repository=repo)
+    starred = Star.objects.filter(repository=repo, user=request.user).first()
+    print(repo.developers)
     return render(
         request,
         "repository_page.html",
@@ -49,6 +53,8 @@ def single_repo(request, repository_id):
             "default_branch": default_branch,
             "branches": branches,
             "pull_requests": pull_requests,
+            "commits": commits,
+            "starred": starred,
         },
     )
 
@@ -61,15 +67,17 @@ def delete_repo(request, repository_id):
 
 
 @login_required
-def rename_repo(request, repository_id):
+def edit_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    return create_form_view(
-        request,
-        repo,
-        RenameRepoForm,
-        redirect("single_repository", repository_id),
-        "create_form.html",
-    )
+    developers = User.objects.exclude(pk=repo.lead.id)
+    if request.method == "POST":
+        form = EditRepoForm(request.POST, developers=developers, instance=repo)
+        if form.is_valid():
+            form.save()
+        return redirect("single_repository", repository_id)
+    else:
+        form = EditRepoForm(developers=developers, instance=repo)
+        return render(request, "create_form.html", {"form": form})
 
 
 @login_required()
@@ -205,4 +213,13 @@ def get_pull_request(request, repository_id, pull_request_id):
         request,
         "pull_request.html",
         {"pull_request": pull_request, "comments": comments},
+    )
+
+
+def get_code_page(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    return render(
+        request,
+        "code_page.html",
+        {},
     )

@@ -3,16 +3,28 @@
 
 {% block content %}
   <div class="row">
-    <h2>{{repository.name}}</h2>
+    <h2>{{repository.name}}  </h2>
     <div class="float-right">
       <a href="{% url 'fork_repo' repository.id %}">
         <button class="btn btn-success">Fork</button>
+        {% if request.user.is_authenticated %}
+          {% if starred %}
+            <a href="{% url 'delete_star' starred.id %}">
+              <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
+            </a>
+          {% else %}
+            <a href="{% url 'new_star' repository.id %}">
+              <button class="btn btn-success">{% bs_icon 'star' %}</button>
+            </a>
+          {% endif %}
+
+        {% endif %}
       </a>
     </div>
   </div>
-  <div class="row">
+  <div class="row mg-1">
     {% for label in labels %}
-      <span class="label" style="background-color: {{label.color}}">{{label.name}}</span>
+      <span class="label badge badge-secondary" style="background-color: {{label.color}}">{{label.name}}</span>
     {% endfor %}
   </div>
   <div class="row">
@@ -26,21 +38,22 @@
   </div>
   {{repository.developers}}
   <p>Stars: {{star_count}}</p>
-
-  {% if request.user.is_authenticated %}
-    <a href="{% url 'new_star' repository.id %}">
-      <button class="btn btn-success">{% bs_icon 'star' %}</button>
-    </a>
-  {% comment %}
-  <a href="{% url 'delete_star' star.id %}">
-    <button class="btn btn-success">Remove Star</button>
-  </a>
-  {% endcomment %} 
-  {% endif %}
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
       <a
         class="nav-link active"
+        id="code-tab"
+        data-toggle="tab"
+        href="#code"
+        role="tab"
+        aria-controls="code"
+        aria-selected="true">
+        Code
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
         id="issue-tab"
         data-toggle="tab"
         href="#issues"
@@ -91,6 +104,14 @@
     <div class="tab-content" id="myTabContent">
       <div
         class="tab-pane fade show active"
+        id="code"
+        role="tabpanel"
+      >
+        {% include 'code_page.html' with commits=commits %}
+        <a href="{% url 'create_commit' repository_id=repository.id branch_id=default_branch.id %}">New commit</a>
+      </div>
+      <div
+        class="tab-pane fade"
         id="issues"
         role="tabpanel"
       >

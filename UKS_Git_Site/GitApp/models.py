@@ -102,16 +102,20 @@ class DefaultBranch(models.Model):
 
 
 class Commit(models.Model):
-    date_time = models.DateTimeField(max_length=200)
+    date_time = models.DateTimeField(auto_now=True)
     log_message = models.CharField(max_length=200)
     hash = models.CharField(max_length=200)
-    # TODO: parents
-    author = models.ForeignKey(
-        User, null=True, on_delete=models.SET_NULL, related_name="author"
-    )
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     commiter = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL, related_name="commiter"
     )
+
+    def __str__(self):
+        date_time = self.date_time.strftime("%m/%d/%Y, %H:%M:%S")
+        return (
+            f"Commit {self.log_message} - {self.hash} by {self.commiter} at {date_time}"
+        )
 
 
 class Milestone(models.Model):
