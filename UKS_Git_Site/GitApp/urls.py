@@ -140,6 +140,11 @@ repo_patterns = [
         repo_views.get_pull_request,
         name="pull_request_page",
     ),
+    path(
+        "repo/<int:repository_id>/pull_request/<int:pull_request_id>/merge",
+        repo_views.merge_pr,
+        name="merge_pr",
+    ),
 ]
 
 urlpatterns = (

@@ -121,6 +121,7 @@
     </div>
     <div class="tab-pane fade" id="pull_requests" role="tabpanel">
       {% include 'pull_requests.html' with pull_requests=pull_requests %}
+      <a href="{% url 'create_pull_request' repository_id=repository.id %}">New pull request</a>
     </div>
     <div class="tab-pane fade" id="milestones" role="tabpanel">
       {% include 'milestones.html' with milestones=milestones%}

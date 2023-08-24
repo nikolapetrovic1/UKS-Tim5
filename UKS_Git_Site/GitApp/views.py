@@ -153,9 +153,9 @@ def create_reaction(request, comment_id, reaction_type):
 
 
 @login_required
-def create_commit(request, repository_id, branch_id):
+def create_commit(request, repository_id,branch_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    branch = get_object_or_404(Branch, id=branch_id, repository=repo)
+    branch = get_object_or_404(Branch,id=branch_id,repository=repo)
     commit = Commit(repository=repo, branch=branch, commiter=request.user)
     if request.method == "POST":
         form = CommitForm(
