@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from copy import deepcopy
 from ..utils import milestone_progress, user_in_repository
 
-from ..views import create_form_view, get_reaction_count
+from ..views import create_form_view, get_reaction_count, redirect_back
 
 from ..forms import (
     DefaultBranchForm,
@@ -24,6 +24,7 @@ from ..models import (
     Star,
     Comment,
     Commit,
+    State,
 )
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -257,8 +258,9 @@ def create_pull_request(request, repository_id):
 def get_pull_request(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
+    source_commits, target_commits = get_pr_commits(repository_id, pull_request_id)
+    diff = list(set(source_commits) - set(target_commits))
     comments = Comment.objects.filter(task=pull_request)
-
     for comment in comments:
         if request.user.is_authenticated:
             comment.reactions = get_reaction_count(comment, request.user)
@@ -267,8 +269,49 @@ def get_pull_request(request, repository_id, pull_request_id):
     return render(
         request,
         "pull_request.html",
-        {"pull_request": pull_request, "comments": comments},
+        {
+            "pull_request": pull_request,
+            "comments": comments,
+            "source_commits": source_commits,
+            "target_commits": target_commits,
+            "diff": diff,
+            "can_merge": can_merge_pr(pull_request),
+        },
     )
+
+
+def can_merge_pr(pull_request):
+    target_commits = Commit.objects.filter(branch=pull_request.target)
+    source_commits = Commit.objects.filter(branch=pull_request.source)
+    last_target_commit = target_commits.last()
+    for i, commit in enumerate(source_commits):
+        if commit.hash == last_target_commit.hash:
+            return True, source_commits[i + 1 :]
+    return False, []
+
+
+@login_required
+def merge_pr(request, repository_id, pull_request_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
+    can_merge, commits_to_add = can_merge_pr(pull_request)
+    if not can_merge:
+        return HttpResponse("Not able to merge", status=403)
+    for commit in commits_to_add:
+        commit.id = None
+        commit.branch = pull_request.target
+        commit.save()
+    pull_request.state = State.MERGED
+    pull_request.save()
+    return redirect("single_repository", repository_id=repository_id)
+
+
+def get_pr_commits(repository_id, pull_request_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
+    target_commits = Commit.objects.filter(branch=pull_request.target)
+    source_commits = Commit.objects.filter(branch=pull_request.source)
+    return target_commits, source_commits
 
 
 def get_code_page(request, repository_id):
