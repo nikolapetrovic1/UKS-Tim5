@@ -1,5 +1,6 @@
 from datetime import date
 from random import betavariate
+from django.http.response import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from copy import deepcopy
 from ..utils import milestone_progress, user_in_repository
@@ -25,6 +26,7 @@ from ..models import (
     Comment,
     Commit,
     State,
+    RepositoryState,
 )
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -32,6 +34,10 @@ from django.http import HttpResponse
 
 def single_repo_branch(request, repository_id, branch_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if (repo.private == RepositoryState.PRIVATE) and (
+        request.user not in repo.developers.all()
+    ):
+        raise Http404("Resource not found")
     branch = Branch.objects.filter(id=branch_id, repository=repo).first()
     branches = Branch.objects.filter(repository=repo)
     star_count = Star.objects.filter(repository=repo).count()
@@ -63,6 +69,10 @@ def single_repo_branch(request, repository_id, branch_id):
 
 def single_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if (repo.private == RepositoryState.PRIVATE) and (
+        request.user not in repo.developers.all()
+    ):
+        raise Http404("Resource not found")
     default_branch = DefaultBranch.objects.filter(repository=repo).first()
     branches = Branch.objects.filter(repository=repo)
     star_count = Star.objects.filter(repository=repo).count()
@@ -284,6 +294,8 @@ def can_merge_pr(pull_request):
     target_commits = Commit.objects.filter(branch=pull_request.target)
     source_commits = Commit.objects.filter(branch=pull_request.source)
     last_target_commit = target_commits.last()
+    if not target_commits:
+        return True, source_commits
     for i, commit in enumerate(source_commits):
         if commit.hash == last_target_commit.hash:
             return True, source_commits[i + 1 :]

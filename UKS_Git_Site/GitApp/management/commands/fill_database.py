@@ -42,6 +42,7 @@ class Command(BaseCommand):
 
         r1 = Repository(id=1, name="test", lead=user1)
         r1.save()
+        r1.developers.add(user1, user2)
         r1.developers.add(user2)
         r1.labels.add(Label.objects.filter(id=1).first())
         r1.labels.add(Label.objects.filter(id=2).first())
@@ -49,10 +50,10 @@ class Command(BaseCommand):
 
         r2 = Repository(id=2, name="Repo2", lead=user2)
         r2.save()
-
+        r2.developers.add(user2)
         r3 = Repository(id=3, name="Repo3", lead=user1)
         r3.save()
-
+        r3.developers.add(user1)
         Branch.objects.all().delete()
         b1 = Branch(repository=r1, name="main")
         b2 = Branch(repository=r1, name="develop")

@@ -7,6 +7,8 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 
+from GitApp.views import redirect_back
+
 
 from .models import User, Star
 
