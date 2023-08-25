@@ -3,6 +3,8 @@ from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from ...models import *
 from ...constants import create_default_labels
+from django.core.management.color import no_style
+from django.db import connection
 
 
 class Command(BaseCommand):
@@ -48,7 +50,7 @@ class Command(BaseCommand):
         r1.labels.add(Label.objects.filter(id=2).first())
         # r1.save()
 
-        r2 = Repository(id=2, name="Repo2", lead=user2)
+        r2 = Repository(id=2, name="Repo2", lead=user2, private=RepositoryState.PRIVATE)
         r2.save()
         r2.developers.add(user2)
         r3 = Repository(id=3, name="Repo3", lead=user1)
@@ -57,12 +59,16 @@ class Command(BaseCommand):
         Branch.objects.all().delete()
         b1 = Branch(repository=r1, name="main")
         b2 = Branch(repository=r1, name="develop")
+        b3 = Branch(repository=r2, name="main")
         b1.save()
         b2.save()
+        b3.save()
 
         DefaultBranch.objects.all().delete()
         db1 = DefaultBranch(repository=r1, branch=b1)
+        db2 = DefaultBranch(repository=r2, branch=b3)
         db1.save()
+        db2.save()
 
         Milestone.objects.all().delete()
         milestone1 = Milestone(
@@ -130,4 +136,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._add_data()
+        sequence_sql = connection.ops.sequence_reset_sql(no_style(), [Milestone])
+        with connection.cursor() as cursor:
+            for sql in sequence_sql:
+                cursor.execute(sql)
         # self._add_repositories(t)
