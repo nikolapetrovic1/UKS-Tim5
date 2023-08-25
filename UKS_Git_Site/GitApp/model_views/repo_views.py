@@ -318,6 +318,14 @@ def merge_pr(request, repository_id, pull_request_id):
     return redirect("single_repository", repository_id=repository_id)
 
 
+def close_pr(request, repository_id, pull_request_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
+    pull_request.state = State.CLOSED
+    pull_request.save()
+    return redirect("single_repository", repository_id=repository_id)
+
+
 def get_pr_commits(repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)

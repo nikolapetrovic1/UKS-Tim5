@@ -22,7 +22,7 @@
             </a>
         {% endif %}
         {% if pull_request.state == "OP" %}
-            <a href="{% url 'merge_pr' repository_id=pull_request.repository.id pull_request_id=pull_request.id %}">
+            <a href="{% url 'close_pr' repository_id=pull_request.repository.id pull_request_id=pull_request.id %}">
                 <button class="btn btn-primary">Close</button>
             </a>
         {% endif %}
