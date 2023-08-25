@@ -145,6 +145,11 @@ repo_patterns = [
         repo_views.merge_pr,
         name="merge_pr",
     ),
+    path(
+        "repo/<int:repository_id>/pull_request/<int:pull_request_id>/close",
+        repo_views.close_pr,
+        name="close_pr",
+    ),
 ]
 
 urlpatterns = (
