@@ -84,7 +84,6 @@ user_patterns = [
     path("login/", user_view.user_login, name="login"),
     path("logout/", user_view.user_logout, name="logout"),
     path("user/delete/", user_view.delete_user, name="delete_user"),
-    path("test/", user_view.test, name="test"),
     path("profile/", user_view.user_profile, name="user_profile"),
     path("profile/repos/", repo_views.get_logged_user_repos, name="repo_by_user"),
     path("register/", user_view.user_register, name="user_register"),
