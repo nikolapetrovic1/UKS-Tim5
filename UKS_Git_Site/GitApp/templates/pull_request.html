@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h2>{{pull_request.source}}</h2>
+        </div>
+        <div class="row" id="">
+            <p>
+                {% if pull_request.state == "CL" %}
+                    <span class="badge badge-secondary"> CLOSED </span>
+                {% elif pull_request.state == "OP" %}
+                    <span class="badge badge-primary"> OPEN </span>
+                {% else %}
+                    <span class="badge badge-primary"> MERGED </span>
+                {% endif %}
+            </p>
+            <p>{{pull_request.creator}} wants to merge from {{pull_request.source}} into {{pull_request.target}}</p>
+        </div>
+        {% if can_merge.0 and pull_request.state == "OP" %}
+            <a href="{% url 'merge_pr' repository_id=pull_request.repository.id pull_request_id=pull_request.id %}">
+                <button class="btn btn-primary">Merge</button>
+            </a>
+        {% endif %}
+        {% if pull_request.state == "OP" %}
+            <a href="{% url 'close_pr' repository_id=pull_request.repository.id pull_request_id=pull_request.id %}">
+                <button class="btn btn-primary">Close</button>
+            </a>
+        {% endif %}
+        <p> diff: {{can_merge.1}} </p>
+        <p> can merge: {{can_merge.0}}</p>
+        {% block comments %}
+            {% include 'comments.html' with comments=comments task_id=pull_request.id%}
+        {% endblock %}
+
+{% endblock %}
+

@@ -7,6 +7,7 @@ python3 manage.py collectstatic --noinput
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py fill_database
+python manage.py sqlsequencereset GitApp | python manage.py dbshell
 # run Django develop server
 #python3 manage.py runserver 0.0.0.0:8000
 # run Django app inside gunicorn

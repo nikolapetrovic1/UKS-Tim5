@@ -31,13 +31,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'GitApp.apps.GitappConfig',
+    'GitApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "crispy_forms",
+    "crispy_bootstrap4",
+    "polymorphic",
+    "django_bootstrap_icons",
 ]
 
 MIDDLEWARE = [
@@ -85,7 +89,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "GitApp.User" 
 
+LOGIN_URL = 'login'
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -118,7 +124,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -126,7 +131,12 @@ STATIC_URL = '/static/'
 # The root folder that provides static files for the deployment.
 # To put all static files here, run the following command:
 # python manage.py collectstatic --noinput
+
 STATIC_ROOT = '../static/'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
 
 # automatski generise kljuc
 # (https://stackoverflow.com/questions/66971594/auto-create-primary-key-used-when-not-defining-a-primary-key-type-warning-in-dja)

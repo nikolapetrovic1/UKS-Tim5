@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <title>Profile page</title>
+</head>
+<body>
+    <p>First name: {{user.firstName}}</p>
+    <p>Last name: {{user.lastName}}</p>
+    <br>
+    <p>Company: {{user.company}}</p>
+    <p>Location: {{user.location}}</p>
+    <br>
+    <h4>Stars</h4>
+    {% for star in stars %}
+            <li><a href="/{{star.repository.id}}">
+                {{star.repository.name}}
+            </a>
+                &nbsp; &nbsp;
+                <a  href="{% url 'delete_star' star.id %}"><button class="btn">unfollow</button></a>
+            </li>
+    {% endfor %}
+</body>
+</html>

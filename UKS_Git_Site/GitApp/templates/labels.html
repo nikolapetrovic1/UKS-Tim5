@@ -1,0 +1,6 @@
+{% include "styling.html" %}
+<div class="row">
+  {% for label in labels %}
+    <span class="label" style="background-color: {{label.color}}">{{label.name}}</span>
+  {% endfor %}
+</div>

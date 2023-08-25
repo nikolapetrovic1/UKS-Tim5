@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load bootstrap_icons %}
+
+{% block content %}
+  <div class="row p-1">
+    <h1>{{repository.name}}</h1>
+    <div class="ml-auto">
+      <a href="{% url 'fork_repo' repository.id %}">
+        <button class="btn btn-success">Fork</button>
+        {% if request.user.is_authenticated %}
+          {% if starred %}
+            <a href="{% url 'delete_star' starred.id %}">
+              <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
+            </a>
+          {% else %}
+            <a href="{% url 'new_star' repository.id %}">
+              <button class="btn btn-success">{% bs_icon 'star' %}</button>
+            </a>
+          {% endif %}
+
+        {% endif %}
+      </a>
+    </div>
+  </div>
+  <div class="row p-1">
+    {% comment %} 
+    <div class="row">
+      {% for label in labels %}
+        <span class="label badge badge-secondary" style="background-color: {{label.color}}">{{label.name}}</span>
+      {% endfor %}
+    </div>
+    {% endcomment %}
+    <select onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+      {% for branch in branches %}
+        <option value="{% url 'single_repository_branch' repository_id=repository.id branch_id=branch.id %}"
+                {% if branch_id == branch.id %} selected{% endif %}
+        >{{branch.name}}</option>
+      {% endfor %}
+    </select>
+    <div class="ml-auto">
+      <p>Stars: {{star_count}}</p>
+    </div>
+  </div>
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a
+        class="nav-link active"
+        id="code-tab"
+        data-toggle="tab"
+        href="#code"
+        role="tab"
+        aria-controls="code"
+        aria-selected="true">
+        Code
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="issue-tab"
+        data-toggle="tab"
+        href="#issues"
+        role="tab"
+        aria-controls="issues"
+        aria-selected="true">
+        Issues
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="pull-request-tab"
+        data-toggle="tab"
+        href="#pull_requests"
+        role="tab"
+        aria-controls="pull_requests"
+        aria-selected="true">
+        Pull requests
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="milestone-tab"
+        data-toggle="tab"
+        href="#milestones"
+        role="tab"
+        aria-controls="milestones"
+        aria-selected="false"
+      >Milestones</a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="setting-tab"
+        data-toggle="tab"
+        href="#settings"
+        role="tab"
+        aria-controls="settings"
+        aria-selected="false"
+      >Settings</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div
+      class="tab-pane fade show active"
+      id="code"
+      role="tabpanel"
+    >
+      {% include 'code_page.html' with commits=commits %}
+      <a href="{% url 'create_commit' repository_id=repository.id branch_id=current_branch.id %}">New commit</a>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="issues"
+      role="tabpanel"
+    >
+      {% include 'issues.html' with issues=issues %}
+      <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
+    </div>
+    <div class="tab-pane fade" id="pull_requests" role="tabpanel">
+      {% include 'pull_requests.html' with pull_requests=pull_requests %}
+      <a href="{% url 'create_pull_request' repository_id=repository.id %}">New pull request</a>
+    </div>
+    <div class="tab-pane fade" id="milestones" role="tabpanel">
+      {% include 'milestones.html' with milestones=milestones%}
+    </div>
+    <div class="tab-pane fade" id="settings" role="tabpanel">
+      {% include 'settings.html' with repository=repository %}
+    </div>
+  </div>
+{% endblock %}

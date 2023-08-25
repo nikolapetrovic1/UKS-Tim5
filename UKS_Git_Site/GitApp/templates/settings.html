@@ -1,0 +1,24 @@
+{% block test %}
+
+  <div class="container">
+    <div class="row" id="">
+
+      <div class="col" id="">
+        <a href="{% url 'delete_repo' repository_id=repository.id %}">
+          <button class="btn btn-danger">Delete repository</button>
+        </a>
+        <a href="{% url 'edit_repo' repository_id=repository.id %}">
+          <button class="btn btn-success">Edit repository</button>
+        </a>
+        <a href="{% url 'select_default_branch' repository_id=repository.id %}">
+          <button class="btn btn-success">Select Default Branches</button>
+        </a>
+        <a href="{% url 'create_branch' repository_id=repository.id %}">
+          <button class="btn btn-success">Create Branch</button>
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+

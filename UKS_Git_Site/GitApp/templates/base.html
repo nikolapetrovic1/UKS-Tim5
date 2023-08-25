@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  {% include "styling.html" %}
+  <body>
+    <div class="page">
+      {% include "navbar.html" %}
+      <div class="left">
+        {% block links %}{% endblock %}
+      </div>
+      <div class="container">{% block content %}{% endblock %}</div>
+    </div>
+  </body>
+</html>
