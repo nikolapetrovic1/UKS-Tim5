@@ -23,10 +23,12 @@ def create_milestone(request, repository_id):
 
 def get_milestone(request, repository_id, milestone_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    milestone = get_object_or_404(Milestone, id=milestone_id)
+    milestone = get_object_or_404(Milestone, repository=repo, id=milestone_id)
     issues = Issue.objects.filter(milestone=milestone)
     progress = milestone_progress(milestone)
-    show_edit = True
+    show_edit = False
+    if request.user in repo.developers.all():
+        show_edit = True
     # if user_in_repository(milestone.repository.id,request.user.id):
     #    show_edit = True
     return render(

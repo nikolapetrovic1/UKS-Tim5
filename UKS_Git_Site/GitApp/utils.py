@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from .models import *
+from django.core.management import call_command
 
 
 class MilestoneProgress:
@@ -26,3 +27,7 @@ def user_in_repository(repository_id, user_id):
     repository = get_object_or_404(Repository, id=repository_id)
     user = get_object_or_404(User, id=user_id)
     return user in repository.developers.all()
+
+
+def reset_sequence():
+    call_command("sqlsequencereset", "GitApp")
