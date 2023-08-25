@@ -89,6 +89,9 @@ class Branch(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    class Meta:
+        unique_together = ("name", "repository")
+
 
 class DefaultBranch(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)

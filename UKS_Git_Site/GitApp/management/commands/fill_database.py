@@ -57,16 +57,16 @@ class Command(BaseCommand):
         r3.save()
         r3.developers.add(user1)
         Branch.objects.all().delete()
-        b1 = Branch(repository=r1, name="main")
-        b2 = Branch(repository=r1, name="develop")
-        b3 = Branch(repository=r2, name="main")
+        b1 = Branch(id=1, repository=r1, name="main")
+        b2 = Branch(id=2, repository=r1, name="develop")
+        b3 = Branch(id=3, repository=r2, name="main")
         b1.save()
         b2.save()
         b3.save()
 
         DefaultBranch.objects.all().delete()
-        db1 = DefaultBranch(repository=r1, branch=b1)
-        db2 = DefaultBranch(repository=r2, branch=b3)
+        db1 = DefaultBranch(id=1, repository=r1, branch=b1)
+        db2 = DefaultBranch(id=2, repository=r2, branch=b3)
         db1.save()
         db2.save()
 
@@ -136,7 +136,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._add_data()
-        sequence_sql = connection.ops.sequence_reset_sql(no_style(), [Milestone])
+        sequence_sql = connection.ops.sequence_reset_sql(
+            no_style(),
+            [Repository, Milestone, Branch, DefaultBranch, Task],
+        )
         with connection.cursor() as cursor:
             for sql in sequence_sql:
                 cursor.execute(sql)
