@@ -90,17 +90,19 @@
         aria-selected="false"
       >Milestones</a>
     </li>
-    <li class="nav-item">
-      <a
-        class="nav-link"
-        id="setting-tab"
-        data-toggle="tab"
-        href="#settings"
-        role="tab"
-        aria-controls="settings"
-        aria-selected="false"
-      >Settings</a>
-    </li>
+    {% if request.user == repository.lead %}
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          id="setting-tab"
+          data-toggle="tab"
+          href="#settings"
+          role="tab"
+          aria-controls="settings"
+          aria-selected="false"
+        >Settings</a>
+      </li>
+    {% endif %}
   </ul>
   <div class="tab-content" id="myTabContent">
     <div
@@ -126,8 +128,10 @@
     <div class="tab-pane fade" id="milestones" role="tabpanel">
       {% include 'milestones.html' with milestones=milestones%}
     </div>
-    <div class="tab-pane fade" id="settings" role="tabpanel">
-      {% include 'settings.html' with repository=repository %}
-    </div>
+    {% if request.user == repository.lead %}
+      <div class="tab-pane fade" id="settings" role="tabpanel">
+        {% include 'settings.html' with repository=repository %}
+      </div>
+    {% endif %}
   </div>
 {% endblock %}

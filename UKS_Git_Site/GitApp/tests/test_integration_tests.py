@@ -1,8 +1,9 @@
-from django.test import TestCase, Client
+from django.http import response
+from django.test import Client, TestCase
 from django.urls import reverse
 
-from ..models import User
 from ..management.commands.fill_database import Command
+from ..models import Branch, DefaultBranch, PullRequest, Repository, User
 
 
 # # Create your tests here.
@@ -107,9 +108,85 @@ class RepositoryTestCase(TestCase):
         c = Command()
         c.handle()
 
+    def test_create_repository_ok(self):
+        data = {"name": "uks-gitlight", "private": "PU"}
+        logged_in = self.client.login(username="user2", password="user2")
+        self.assertTrue(logged_in)
+        repo_count = Repository.objects.count()
+        self.client.post(reverse("create_repository"), data)
+        self.assertNotEqual(repo_count, Repository.objects.count())
+
     def test_get_repository_ok(self):
         response = self.client.get(reverse("single_repository", args=[1]))
         self.assertEqual(response.status_code, 200)
+
+    def test_edit_repository_error(self):
+        data = {"name": "uks-tim5"}
+        logged_in = self.client.login(username="user2", password="user2")
+        self.assertTrue(logged_in)
+        response = self.client.post(reverse("edit_repo", args=[1]), data)
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_repository_ok(self):
+        data = {"name": "uks-tim5", "private": "PU"}
+        logged_in = self.client.login(username="user1", password="user1")
+        self.assertTrue(logged_in)
+        self.client.post(reverse("edit_repo", args=[1]), data)
+        repo = Repository.objects.get(id=1)
+        self.assertEqual(data["name"], repo.name)
+
+    def test_change_default_branch_ok(self):
+        data = {"branch": 2}
+        repo = Repository.objects.get(id=1)
+        default_branch = DefaultBranch.objects.get(repository=repo)
+        logged_in = self.client.login(username="user1", password="user1")
+        self.assertTrue(logged_in)
+        self.assertEqual(default_branch.branch.name, "main")
+        self.client.post(reverse("select_default_branch", args=[1]), data)
+        default_branch = DefaultBranch.objects.get(repository=repo)
+        self.assertEqual(default_branch.branch.name, "develop")
+
+    def test_create_branch_ok(self):
+        data = {
+            "name": "feat:test",
+            "from_branch": 2,
+        }
+        branch_count = Branch.objects.count()
+        logged_in = self.client.login(username="user1", password="user1")
+        self.client.post(reverse("create_branch", args=[1]), data)
+        self.assertNotEqual(branch_count, Branch.objects.count())
+
+    def test_create_branch_already_exists_name(self):
+        data = {
+            "name": "main",
+            "from_branch": 2,
+        }
+        repo = Repository.objects.filter(id=1)
+        self.client.login(username="user1", password="user1")
+        response = self.client.post(reverse("create_branch", args=[1]), data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_pull_request_ok(self):
+        data = {
+            "source": 2,
+            "target": 1,
+        }
+        pr_count = PullRequest.objects.count()
+        self.client.login(username="user1", password="user1")
+        self.client.post(reverse("create_pull_request", args=[1]), data)
+        self.assertNotEqual(pr_count, PullRequest.objects.count())
+
+    def test_delete_repository_404(self):
+        logged_in = self.client.login(username="user2", password="user2")
+        self.assertTrue(logged_in)
+        response = self.client.get(reverse("delete_repo", args=[1]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_repository_ok(self):
+        logged_in = self.client.login(username="user1", password="user1")
+        self.assertTrue(logged_in)
+        self.client.get(reverse("delete_repo", args=[1]))
+        self.assertFalse(Repository.objects.filter(id=1).exists())
 
     def test_get_private_repository_ok(self):
         self.client.login(username="user2", password="user2")
