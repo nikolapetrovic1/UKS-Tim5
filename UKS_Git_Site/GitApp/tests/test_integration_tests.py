@@ -1,4 +1,3 @@
-from typing import assert_type
 from django.http import response
 from django.test import Client, TestCase
 from django.urls import reverse
