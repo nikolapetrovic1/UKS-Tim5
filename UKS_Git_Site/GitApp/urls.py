@@ -100,7 +100,6 @@ repo_patterns = [
         name="single_repository_branch",
     ),
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
-    path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
     path("repo/<int:repository_id>/edit", repo_views.edit_repo, name="edit_repo"),
     path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
     path("repo/create", repo_views.create_repository, name="create_repository"),
@@ -148,6 +147,16 @@ repo_patterns = [
         "repo/<int:repository_id>/pull_request/<int:pull_request_id>/close",
         repo_views.close_pr,
         name="close_pr",
+    ),
+    path(
+        "repo/<int:repository_id>/watch",
+        repo_views.watch_repo,
+        name="watch_repo",
+    ),
+    path(
+        "watched",
+        repo_views.get_watched_repos,
+        name="watched_repos",
     ),
 ]
 

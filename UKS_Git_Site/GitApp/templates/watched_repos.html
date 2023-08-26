@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+  {% for watched_repo in watched %}
+    {{watched_repo.repository.name}} <button class="btn btn-primary mg-1">Unwatch</button>
+  {% endfor %}
+{% endblock %}
+
+

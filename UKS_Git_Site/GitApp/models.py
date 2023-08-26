@@ -76,10 +76,12 @@ class Star(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class Watcher(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    repository = models.ForeignKey(Repository, null=True, on_delete=models.CASCADE)
-    type = models.CharField(max_length=30)
+class Watch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("repository", "user")
 
 
 class Branch(models.Model):

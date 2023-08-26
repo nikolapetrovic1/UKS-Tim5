@@ -27,6 +27,7 @@ from ..models import (
     Star,
     State,
     User,
+    Watch,
 )
 from ..views import create_form_view, get_reaction_count, redirect_back
 
@@ -183,7 +184,23 @@ def fork_repo(request, repository_id):
 
 @login_required()
 def watch_repo(request, repository_id):
-    pass
+    repo = get_object_or_404(Repository, id=repository_id)
+    Watch.objects.get_or_create(repository=repo, user=request.user)
+    return redirect("watched_repos")
+
+
+@login_required
+def get_watched_repos(request):
+    watched = Watch.objects.filter(user=request.user)
+    return render(request, "watched_repos.html", {"watched": watched})
+
+
+@login_required()
+def unwatch_repo(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    watch = Watch.objects.get(repository=repo, user=request.user)
+    watch.delete()
+    return redirect("watched_repos")
 
 
 @login_required
