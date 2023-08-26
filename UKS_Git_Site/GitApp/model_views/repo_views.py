@@ -43,7 +43,7 @@ def single_repo_branch(request, repository_id, branch_id):
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
-    commits = Commit.objects.filter(repository=repo, branch=branch)
+    commits = Commit.objects.filter(branch=branch)
     starred = None
     if request.user.is_authenticated:
         starred = Star.objects.filter(repository=repo, user=request.user).first()
@@ -78,7 +78,7 @@ def single_repo(request, repository_id):
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
-    commits = Commit.objects.filter(repository=repo, branch=default_branch.branch)
+    commits = Commit.objects.filter(branch=default_branch.branch)
     starred = None
     if request.user.is_authenticated:
         starred = Star.objects.filter(repository=repo, user=request.user).first()
@@ -189,10 +189,6 @@ def create_branch(request, repository_id):
             instance=branch,
         )
         if form.is_valid():
-            if Branch.objects.filter(
-                repository=repo, name=form.cleaned_data["name"]
-            ).exists():
-                return HttpResponse("Branch with same name already exists", status=403)
             target_branch = form.save()
             add_commits_from_branch(form.cleaned_data["from_branch"], target_branch)
             return redirect("single_repository", repository_id=repository_id)
@@ -304,6 +300,8 @@ def can_merge_pr(pull_request):
 @login_required
 def merge_pr(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if not request.user in repo.developers.all():
+        return HttpResponseForbidden("No access")
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
     can_merge, commits_to_add = can_merge_pr(pull_request)
     if not can_merge:
@@ -317,11 +315,15 @@ def merge_pr(request, repository_id, pull_request_id):
     return redirect("single_repository", repository_id=repository_id)
 
 
+@login_required
 def close_pr(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if not request.user in repo.developers.all():
+        return HttpResponseForbidden("No access")
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
     pull_request.state = State.CLOSED
     pull_request.save()
+
     return redirect("single_repository", repository_id=repository_id)
 
 

@@ -1,9 +1,18 @@
 from django.http import response
 from django.test import Client, TestCase
 from django.urls import reverse
-
+from django.db.utils import IntegrityError
 from ..management.commands.fill_database import Command
-from ..models import Branch, DefaultBranch, PullRequest, Repository, User
+from ..models import (
+    Branch,
+    DefaultBranch,
+    PullRequest,
+    Repository,
+    User,
+    State,
+    Commit,
+    Star,
+)
 
 
 # # Create your tests here.
@@ -161,10 +170,10 @@ class RepositoryTestCase(TestCase):
             "name": "main",
             "from_branch": 2,
         }
-        repo = Repository.objects.filter(id=1)
         self.client.login(username="user1", password="user1")
-        response = self.client.post(reverse("create_branch", args=[1]), data)
-        self.assertEqual(response.status_code, 403)
+        # name and repository unique_together
+        with self.assertRaises(IntegrityError):
+            self.client.post(reverse("create_branch", args=[1]), data)
 
     def test_create_pull_request_ok(self):
         data = {
@@ -175,6 +184,39 @@ class RepositoryTestCase(TestCase):
         self.client.login(username="user1", password="user1")
         self.client.post(reverse("create_pull_request", args=[1]), data)
         self.assertNotEqual(pr_count, PullRequest.objects.count())
+
+    def test_close_pull_request_ok(self):
+        self.client.login(username="user1", password="user1")
+        pr = PullRequest.objects.get(id=3)
+        self.assertNotEqual(pr.state, State.CLOSED)
+        self.client.get(reverse("close_pr", args=[1, 3]))
+        self.assertEqual(PullRequest.objects.get(id=3).state, State.CLOSED)
+
+    def test_merge_pull_request_ok(self):
+        self.client.login(username="user1", password="user1")
+        pr = PullRequest.objects.get(id=3)
+        target_branch = Commit.objects.filter(branch=pr.target)
+        self.assertNotEqual(pr.state, State.MERGED)
+        self.client.get(reverse("merge_pr", args=[1, 3]))
+        target_branch_after = Commit.objects.filter(branch=pr.target)
+        self.assertEqual(PullRequest.objects.get(id=3).state, State.MERGED)
+        self.assertNotEqual(target_branch, target_branch_after)
+
+    def test_star_repo_ok(self):
+        repo = Repository.objects.get(id=1)
+        user = User.objects.get(username="user1")
+        self.client.login(username="user1", password="user1")
+        self.assertFalse(Star.objects.filter(repository=repo, user=user).exists())
+        self.client.get(reverse("new_star", args=[1]))
+        self.assertTrue(Star.objects.filter(repository=repo, user=user).exists())
+
+    def test_delete_star_repo_ok(self):
+        repo = Repository.objects.get(id=2)
+        user = User.objects.get(username="user1")
+        self.client.login(username="user1", password="user1")
+        self.assertTrue(Star.objects.filter(repository=repo, user=user).exists())
+        self.client.get(reverse("delete_star", args=[2]))
+        self.assertFalse(Star.objects.filter(repository=repo, user=user).exists())
 
     def test_delete_repository_404(self):
         logged_in = self.client.login(username="user2", password="user2")
@@ -200,6 +242,13 @@ class RepositoryTestCase(TestCase):
     def test_get_repository_404(self):
         response = self.client.get(reverse("single_repository", args=[99]))
         self.assertEqual(response.status_code, 404)
+
+
+class GeneralTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        c = Command()
+        c.handle()
 
 
 class IssueTests(TestCase):

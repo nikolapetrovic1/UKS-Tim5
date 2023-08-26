@@ -108,7 +108,6 @@ class Commit(models.Model):
     date_time = models.DateTimeField(auto_now=True)
     log_message = models.CharField(max_length=200)
     hash = models.CharField(max_length=200)
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     commiter = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL, related_name="commiter"
