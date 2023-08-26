@@ -131,6 +131,8 @@
     </div>
     <div class="tab-pane fade" id="milestones" role="tabpanel">
       {% include 'milestones.html' with milestones=milestones%}
+      <a href="{% url 'create_milestone' repository_id=repository.id%}">
+        Create milestone</a>
     </div>
     {% if request.user == repository.lead %}
       <div class="tab-pane fade" id="settings" role="tabpanel">

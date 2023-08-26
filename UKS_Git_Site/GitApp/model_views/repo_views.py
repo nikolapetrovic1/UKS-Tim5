@@ -167,6 +167,17 @@ def fork_repo(request, repository_id):
     forked_repo.developers.clear()
     forked_repo.lead = request.user
     forked_repo.save()
+    branch = Branch.objects.get(name="main", repository=repo)
+    commits = Commit.objects.filter(branch=branch)
+    branch.id = None
+    branch.repository = forked_repo
+    branch.save()
+    for commit in commits:
+        commit.id = None
+        commit.branch = branch
+        commit.save()
+    default_branch = DefaultBranch(branch=branch, repository=forked_repo)
+    default_branch.save()
     return redirect("single_repository", repository_id=forked_repo.id)
 
 
