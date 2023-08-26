@@ -37,6 +37,10 @@
         >{{branch.name}}</option>
       {% endfor %}
     </select>
+    {% if request.user in repository.developers %}
+      <a href="{% url 'create_branch' repository_id=repository.id%}">
+        Create branch </a>
+    {% endif %}
     <div class="ml-auto">
       <p>Stars: {{star_count}}</p>
     </div>

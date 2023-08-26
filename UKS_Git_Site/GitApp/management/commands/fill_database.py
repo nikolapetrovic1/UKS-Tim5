@@ -70,6 +70,14 @@ class Command(BaseCommand):
         db1.save()
         db2.save()
 
+        Commit.objects.all().delete()
+        commit1 = Commit(
+            log_message="feat:init project",
+            hash="1234",
+            commiter=user1,
+            branch=b2,
+        )
+        commit1.save()
         Milestone.objects.all().delete()
         milestone1 = Milestone(
             id=1,
@@ -128,7 +136,7 @@ class Command(BaseCommand):
 
         Star.objects.all().delete()
 
-        star1 = Star(id=1, repository=r1, user=user1)
+        star1 = Star(id=1, repository=r1, user=user2)
         star1.save()
 
         star2 = Star(id=2, repository=r2, user=user1)
@@ -138,9 +146,8 @@ class Command(BaseCommand):
         self._add_data()
         sequence_sql = connection.ops.sequence_reset_sql(
             no_style(),
-            [Repository, Milestone, Branch, DefaultBranch, Task],
+            [Repository, Milestone, Branch, DefaultBranch, Task, Star],
         )
         with connection.cursor() as cursor:
             for sql in sequence_sql:
                 cursor.execute(sql)
-        # self._add_repositories(t)

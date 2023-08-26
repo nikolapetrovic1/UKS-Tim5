@@ -56,7 +56,7 @@ def add_users_to_repo(request, repository_id, user_id):
 def new_star(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
     user = get_object_or_404(User, id=request.user.id)
-    star, _ = Star.objects.get_or_create(repository=repo, user=user)
+    Star.objects.get_or_create(repository=repo, user=user)
     url = reverse("single_repository", args=[repository_id])
     return redirect(url)
 
@@ -64,8 +64,10 @@ def new_star(request, repository_id):
 @login_required()
 def delete_star(request, star_id):
     star = get_object_or_404(Star, id=star_id, user=request.user)
+    repository_id = star.repository.id
     star.delete()
-    return redirect_back(request)
+    url = reverse("single_repository", args=[repository_id])
+    return redirect(url)
 
 
 def get_labels(request):
@@ -153,10 +155,10 @@ def create_reaction(request, comment_id, reaction_type):
 
 
 @login_required
-def create_commit(request, repository_id,branch_id):
+def create_commit(request, repository_id, branch_id):
     repo = get_object_or_404(Repository, id=repository_id)
-    branch = get_object_or_404(Branch,id=branch_id,repository=repo)
-    commit = Commit(repository=repo, branch=branch, commiter=request.user)
+    branch = get_object_or_404(Branch, id=branch_id, repository=repo)
+    commit = Commit(branch=branch, commiter=request.user)
     if request.method == "POST":
         form = CommitForm(
             request.POST,
@@ -169,4 +171,4 @@ def create_commit(request, repository_id,branch_id):
         form = CommitForm(
             instance=commit,
         )
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
