@@ -185,13 +185,22 @@ def fork_repo(request, repository_id):
 @login_required()
 def watch_repo(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if (repo.private == RepositoryState.PRIVATE) and (
+        request.user not in repo.developers.all()
+    ):
+        raise Http404("Resource not found")
     Watch.objects.get_or_create(repository=repo, user=request.user)
     return redirect("watched_repos")
 
 
 @login_required
 def get_watched_repos(request):
-    watched = Watch.objects.filter(user=request.user)
+    watched = Watch.objects.filter(user=request.user).prefetch_related("repository")
+    for watch in watched:
+        branches = Branch.objects.filter(repository=watch.repository)
+        watch.repository.branches = branches
+        for branch in branches:
+            branch.commits = Commit.objects.filter(branch=branch)
     return render(request, "watched_repos.html", {"watched": watched})
 
 

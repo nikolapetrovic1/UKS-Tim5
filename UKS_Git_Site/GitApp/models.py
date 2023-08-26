@@ -233,11 +233,3 @@ class Reaction(models.Model):
 
     def __str__(self):
         return f"{self.created_by} - {self.code}"
-
-
-# class StateChanged(Event):
-#     new_state = models.ForeignKey(State, on_delete=models.CASCADE)
-#
-#
-# class LabelApplication(Event):
-#     label = models.ForeignKey(Label, on_delete=models.CASCADE)

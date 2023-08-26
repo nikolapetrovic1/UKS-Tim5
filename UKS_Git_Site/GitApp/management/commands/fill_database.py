@@ -60,16 +60,19 @@ class Command(BaseCommand):
         b1 = Branch(id=1, repository=r1, name="main")
         b2 = Branch(id=2, repository=r1, name="develop")
         b3 = Branch(id=3, repository=r2, name="main")
+        b4 = Branch(id=4, repository=r3, name="main")
         b1.save()
         b2.save()
         b3.save()
+        b4.save()
 
         DefaultBranch.objects.all().delete()
         db1 = DefaultBranch(id=1, repository=r1, branch=b1)
         db2 = DefaultBranch(id=2, repository=r2, branch=b3)
+        db3 = DefaultBranch(id=3, repository=r3, branch=b4)
         db1.save()
         db2.save()
-
+        db3.save()
         Commit.objects.all().delete()
         commit1 = Commit(
             log_message="feat:init project",
