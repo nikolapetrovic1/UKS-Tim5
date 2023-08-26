@@ -223,7 +223,7 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.created_by} - {self.content}"
+        return f"{self.created_by}:{self.date_time} - {self.content}"
 
 
 class Reaction(models.Model):
