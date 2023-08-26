@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  {% for watched_repo in watched %}
+    <div class="row mg-1 p-1">
+      <h2>{{watched_repo.repository.name}} </h2> <button class="btn btn-primary mr-2">Unwatch</button>
+    </div>
+    {% for branch in watched_repo.repository.branches %}
+      <h3>{{branch}}</h3>
+      <ul class="list-group overflow-auto" style="max-height: 300px;">
+        {% for commit in branch.commits %}
+          <li class="list-group-item">{{commit}}</li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+    <br>
+  {% endfor %}
+
+{% endblock %}
+
+
