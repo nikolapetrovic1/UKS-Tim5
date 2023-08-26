@@ -7,19 +7,23 @@
     <div class="ml-auto">
       <a href="{% url 'fork_repo' repository.id %}">
         <button class="btn btn-success">Fork</button>
-        {% if request.user.is_authenticated %}
-          {% if starred %}
-            <a href="{% url 'delete_star' starred.id %}">
-              <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
-            </a>
-          {% else %}
-            <a href="{% url 'new_star' repository.id %}">
-              <button class="btn btn-success">{% bs_icon 'star' %}</button>
-            </a>
-          {% endif %}
-
-        {% endif %}
       </a>
+      <a href="{% url 'watch_repo' repository.id %}">
+        <button class="btn btn-success">Watch</button>
+      </a>
+      {% if request.user.is_authenticated %}
+        {% if starred %}
+          <a href="{% url 'delete_star' starred.id %}">
+            <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
+          </a>
+        {% else %}
+          <a href="{% url 'new_star' repository.id %}">
+            <button class="btn btn-success">{% bs_icon 'star' %}</button>
+          </a>
+        {% endif %}
+
+      {% endif %}
+
     </div>
   </div>
   <div class="row p-1">
