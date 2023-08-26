@@ -54,7 +54,7 @@ milestone_patterns = [
         name="repo_milestones",
     ),
     path(
-        "repo/<int:repository_id>/milestones/create",
+        "repo/<int:repository_id>/milestone/create",
         milestone_views.create_milestone,
         name="create_milestone",
     ),
