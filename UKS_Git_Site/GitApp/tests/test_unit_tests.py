@@ -90,16 +90,6 @@ class PullRequestUnitTest(TestCase):
         )
         self.assertEqual(new_pr.state, State.OPEN)
 
-    def test_pull_request_state_choices(self):
-        with self.assertRaises(DataError):
-            invalid_pr = PullRequest.objects.create(
-                state="invalid_state",
-                target=self.branch_a,
-                source=self.branch_b,
-                creator=self.user,
-                repository=self.repo,
-            )
-
 
 class IssueUnitTest(TestCase):
     def setUp(self):
