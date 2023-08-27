@@ -1,0 +1,11 @@
+{% include "styling.html" %}
+{%block test %}
+    <div id="results">
+        {% for issue in issues %}
+            <li class="list-group-item">
+                <a href="{% url 'issue_page' issue_id=issue.id repository_id=issue.repository_id %}">
+                    {{issue.title}} - {{issue.state}}
+                </a>
+            </li>
+        {% endfor %} {% endblock %}
+</div>
