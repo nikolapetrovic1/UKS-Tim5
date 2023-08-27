@@ -379,3 +379,21 @@ def get_code_page(request, repository_id):
         "code_page.html",
         {},
     )
+
+
+def repo_search(request):
+    repos = Repository.objects.all()
+    if request.htmx:
+        search = request.GET.get("q")
+        if search:
+            repos = Repository.objects.filter(name__icontains=search)
+        else:
+            repos = Repository.objects.all()
+        return render(
+            request,
+            "partials/search-result-repo.html",
+            {
+                "repos": repos,
+            },
+        )
+    return render(request, "partials/search-repo.html", {"repos": repos})

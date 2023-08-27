@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{%block content %}
+    <div class="d-flex justify-content-end mb-4">
+        {% csrf_token %}
+        <input name="q"
+               class="form-control mr-sm-2" type="search"
+               placeholder="Search repos..."
+               hx-get="{% url 'repo_search' %}"
+               hx-target="#results"
+               hx-trigger="input delay:0.2s"
+        />
+    </div>
+    <div id="results">
+        {% include 'repos.html' with repos=repos %}
+    </div>
+
+{% endblock %}

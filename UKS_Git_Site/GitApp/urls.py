@@ -168,6 +168,11 @@ repo_patterns = [
         repo_views.get_watched_repos,
         name="watched_repos",
     ),
+    path(
+        "repos/search",
+        repo_views.repo_search,
+        name="repo_search",
+    ),
 ]
 
 urlpatterns = (
