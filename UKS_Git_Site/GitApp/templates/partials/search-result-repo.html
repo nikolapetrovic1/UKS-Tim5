@@ -1,0 +1,8 @@
+{% include "styling.html" %}
+{%block test %}
+    <div id="results">
+    {% for repo in repos %}
+  <li class="list-group-item"><a href="{% url 'single_repository' repository_id=repo.id %}">{{repo.name}} - {{repo.lead.username}}</a></li>
+    {% endfor %}
+  {% endblock %}
+</div>
