@@ -45,7 +45,7 @@ def create_issue(request, repository_id):
     repository = get_object_or_404(Repository, id=repository_id)
     milestones = Milestone.objects.filter(repository=repository)
     labels = Label.objects.all()
-    issue = Issue.objects.create(creator=request.user, repository=repository)
+    issue = Issue(creator=request.user, repository=repository)
     if request.method == "POST":
         form = IssueForm(
             request.POST,
@@ -73,7 +73,7 @@ def create_issue(request, repository_id):
             labels=labels,
             instance=issue,
         )
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
 @login_required
@@ -141,3 +141,33 @@ def open_issue(request, repository_id, issue_id):
         entity_id=issue.id,
     ).save()
     return redirect("issue_page", repository_id=repository_id, issue_id=issue_id)
+
+
+@login_required()
+def delete_issue(request, repository_id, issue_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    issue = get_object_or_404(Issue, id=issue_id, repository=repo)
+    issue.delete()
+    return redirect("single_repository", repository_id=repository_id)
+
+
+def partial_issue_search(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    issues = Issue.objects.filter(repository=repo)
+    if request.htmx:
+        search = request.GET.get("q")
+        if search:
+            issues = Issue.objects.filter(title__icontains=search, repository=repo)
+        else:
+            issues = Issue.objects.filter(repository=repo)
+
+        return render(
+            request,
+            "partials/search-result.html",
+            {"issues": issues, "repository_id": repository_id},
+        )
+    return render(
+        request,
+        "partials/search.html",
+        {"issues": issues, "repository_id": repository_id},
+    )

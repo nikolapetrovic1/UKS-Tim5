@@ -1,0 +1,13 @@
+  <div class="d-flex justify-content-end mb-4">
+        {% csrf_token %}
+        <input name="q"
+                class="form-control mr-sm-2" type="search" 
+               placeholder="Search issues..."
+               hx-get="{% url 'issue_search' repository_id=repository_id %}"
+               hx-target="#results"
+               hx-trigger="input delay:0.2s"
+        />
+    </div>
+<div id="results">
+    {% include 'issues.html' with issues=issues repository_id=repository_id %} 
+</div>

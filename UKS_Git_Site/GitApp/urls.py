@@ -29,6 +29,16 @@ issue_patterns = [
         issue_views.open_issue,
         name="open_issue",
     ),
+    path(
+        "repo/<int:repository_id>/issue/<int:issue_id>/delete",
+        issue_views.delete_issue,
+        name="delete_issue",
+    ),
+    path(
+        "repo/<int:repository_id>/issue-search",
+        issue_views.partial_issue_search,
+        name="issue_search",
+    ),
 ]
 
 
