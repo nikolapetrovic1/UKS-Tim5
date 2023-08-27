@@ -12,7 +12,7 @@ services:
 
 # Django application
   web:
-    image: jsthegreat/uks-tim5
+    image: nikola7/uks-tim5
     container_name: uks_tim5_web
     labels:
       com.example.service: "web"
