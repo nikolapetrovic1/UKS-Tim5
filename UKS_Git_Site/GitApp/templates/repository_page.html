@@ -126,7 +126,7 @@
       id="issues"
       role="tabpanel"
     >
-      {% include 'issues.html' with issues=issues %}
+      {% include 'partials/search.html' with issues=issues repository_id=repository.id %}
       <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
     </div>
     <div class="tab-pane fade" id="pull_requests" role="tabpanel">

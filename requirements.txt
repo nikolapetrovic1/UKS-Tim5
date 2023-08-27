@@ -10,3 +10,4 @@ django-crispy-forms==2.0
 crispy-bootstrap4==2022.1
 django-polymorphic==3.1.0
 django-bootstrap-icons==0.8.3
+django-htmx==1.16.0

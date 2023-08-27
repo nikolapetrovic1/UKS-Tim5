@@ -29,8 +29,6 @@ def get_milestone(request, repository_id, milestone_id):
     show_edit = False
     if request.user in repo.developers.all():
         show_edit = True
-    # if user_in_repository(milestone.repository.id,request.user.id):
-    #    show_edit = True
     return render(
         request,
         "milestone.html",
