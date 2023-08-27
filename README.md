@@ -20,7 +20,7 @@ python -m venv venv
 ### Clone repo:
 
 ```
-git clone https://github.com/JSTheGreat/UKS-Tim5
+git clone https://github.com/nikolapetrovic1/UKS-Tim5
 cd UKS-Tim5
 ```
 
@@ -30,7 +30,7 @@ You will need docker installed on your machine and set to run on Linux container
 
 ```python
 # This image should be pulled before (re)creating the containers (below)
-docker pull jsthegreat/uks-tim5
+docker pull nikola7/uks-tim5
 ```
 
 ```python
