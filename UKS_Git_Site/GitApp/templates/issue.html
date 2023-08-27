@@ -23,6 +23,9 @@
                         <button class="btn btn-primary">Close issue</button>
                     </a>
                 {% endif %}
+                <a href="{% url 'delete_issue' repository_id=issue.repository_id issue_id=issue.id %}">
+                    <button class="btn btn-danger">Delete issue</button>
+                </a>
             </div>
         </div>
 

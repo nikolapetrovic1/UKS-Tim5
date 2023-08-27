@@ -110,7 +110,11 @@ class EditRepoForm(BasicFormStyle):
 
     class Meta:
         model = Repository
-        fields = ["name", "developers"]
+        fields = [
+            "name",
+            "private",
+            "developers",
+        ]
 
 
 class IssueForm(BasicFormStyle):
@@ -182,16 +186,13 @@ class PullRequestForm(BasicFormStyle):
         self.fields["source"] = ModelChoiceField(
             queryset=branches, required=True, empty_label=None
         )
-        self.fields["assignees"] = ModelMultipleChoiceField(
-            queryset=developers, widget=CheckboxSelectMultiple, required=False
-        )
         self.fields["milestone"] = ModelChoiceField(
             queryset=milestones, required=False, empty_label="Select Milestone"
         )
 
     class Meta:
         model = PullRequest
-        fields = ["target", "source", "assignees", "milestone"]
+        fields = ["target", "source", "milestone"]
 
 
 class CommitForm(BasicFormStyle):

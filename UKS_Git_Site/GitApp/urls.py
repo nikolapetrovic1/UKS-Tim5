@@ -29,6 +29,16 @@ issue_patterns = [
         issue_views.open_issue,
         name="open_issue",
     ),
+    path(
+        "repo/<int:repository_id>/issue/<int:issue_id>/delete",
+        issue_views.delete_issue,
+        name="delete_issue",
+    ),
+    path(
+        "repo/<int:repository_id>/issue-search",
+        issue_views.partial_issue_search,
+        name="issue_search",
+    ),
 ]
 
 
@@ -54,7 +64,7 @@ milestone_patterns = [
         name="repo_milestones",
     ),
     path(
-        "repo/<int:repository_id>/milestones/create",
+        "repo/<int:repository_id>/milestone/create",
         milestone_views.create_milestone,
         name="create_milestone",
     ),
@@ -84,7 +94,6 @@ user_patterns = [
     path("login/", user_view.user_login, name="login"),
     path("logout/", user_view.user_logout, name="logout"),
     path("user/delete/", user_view.delete_user, name="delete_user"),
-    path("test/", user_view.test, name="test"),
     path("profile/", user_view.user_profile, name="user_profile"),
     path("profile/repos/", repo_views.get_logged_user_repos, name="repo_by_user"),
     path("register/", user_view.user_register, name="user_register"),
@@ -101,8 +110,7 @@ repo_patterns = [
         name="single_repository_branch",
     ),
     path("fork/<int:repository_id>", repo_views.fork_repo, name="fork_repo"),
-    path("watch/<int:repository_id>", repo_views.watch_repo, name="watch_repo"),
-    path("repo/rename/<int:repository_id>", repo_views.edit_repo, name="edit_repo"),
+    path("repo/<int:repository_id>/edit", repo_views.edit_repo, name="edit_repo"),
     path("repo/<int:repository_id>/delete", repo_views.delete_repo, name="delete_repo"),
     path("repo/create", repo_views.create_repository, name="create_repository"),
     path(
@@ -149,6 +157,16 @@ repo_patterns = [
         "repo/<int:repository_id>/pull_request/<int:pull_request_id>/close",
         repo_views.close_pr,
         name="close_pr",
+    ),
+    path(
+        "repo/<int:repository_id>/watch",
+        repo_views.watch_repo,
+        name="watch_repo",
+    ),
+    path(
+        "watched",
+        repo_views.get_watched_repos,
+        name="watched_repos",
     ),
 ]
 

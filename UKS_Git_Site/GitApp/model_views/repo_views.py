@@ -1,35 +1,35 @@
+from copy import deepcopy
 from datetime import date
 from random import betavariate
-from django.http.response import Http404
-from django.shortcuts import get_object_or_404, render, redirect
-from copy import deepcopy
-from ..utils import milestone_progress, user_in_repository
 
-from ..views import create_form_view, get_reaction_count, redirect_back
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.http.response import Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 
 from ..forms import (
+    CreateBranchForm,
     DefaultBranchForm,
+    EditRepoForm,
     PullRequestForm,
     RepositoryForm,
-    EditRepoForm,
-    CreateBranchForm,
 )
 from ..models import (
     Branch,
-    DefaultBranch,
-    PullRequest,
-    Repository,
-    Issue,
-    Milestone,
-    User,
-    Star,
     Comment,
     Commit,
-    State,
+    DefaultBranch,
+    Issue,
+    Milestone,
+    PullRequest,
+    Repository,
     RepositoryState,
+    Star,
+    State,
+    User,
+    Watch,
 )
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from ..views import create_form_view, get_reaction_count, redirect_back
 
 
 def single_repo_branch(request, repository_id, branch_id):
@@ -38,13 +38,13 @@ def single_repo_branch(request, repository_id, branch_id):
         request.user not in repo.developers.all()
     ):
         raise Http404("Resource not found")
-    branch = Branch.objects.filter(id=branch_id, repository=repo).first()
+    branch = Branch.objects.get(id=branch_id, repository=repo)
     branches = Branch.objects.filter(repository=repo)
     star_count = Star.objects.filter(repository=repo).count()
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
-    commits = Commit.objects.filter(repository=repo, branch=branch)
+    commits = Commit.objects.filter(branch=branch)
     starred = None
     if request.user.is_authenticated:
         starred = Star.objects.filter(repository=repo, user=request.user).first()
@@ -73,13 +73,13 @@ def single_repo(request, repository_id):
         request.user not in repo.developers.all()
     ):
         raise Http404("Resource not found")
-    default_branch = DefaultBranch.objects.filter(repository=repo).first()
+    default_branch = DefaultBranch.objects.get(repository=repo)
     branches = Branch.objects.filter(repository=repo)
     star_count = Star.objects.filter(repository=repo).count()
     milestones = Milestone.objects.filter(repository=repo)
     issues = Issue.objects.filter(repository=repo)
     pull_requests = PullRequest.objects.filter(repository=repo)
-    commits = Commit.objects.filter(repository=repo, branch=default_branch.branch)
+    commits = Commit.objects.filter(branch=default_branch.branch)
     starred = None
     if request.user.is_authenticated:
         starred = Star.objects.filter(repository=repo, user=request.user).first()
@@ -111,7 +111,7 @@ def delete_repo(request, repository_id):
 
 @login_required
 def edit_repo(request, repository_id):
-    repo = get_object_or_404(Repository, id=repository_id)
+    repo = get_object_or_404(Repository, id=repository_id, lead=request.user)
     developers = User.objects.exclude(pk=repo.lead.id)
     if request.method == "POST":
         form = EditRepoForm(request.POST, developers=developers, instance=repo)
@@ -120,13 +120,12 @@ def edit_repo(request, repository_id):
         return redirect("single_repository", repository_id)
     else:
         form = EditRepoForm(developers=developers, instance=repo)
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
-@login_required()
+@login_required
 def create_repository(request):
-    lead = get_object_or_404(User, id=request.user.id)
-    repo = Repository(lead=lead)
+    repo = Repository(lead=request.user)
     if request.method == "POST":
         form = RepositoryForm(request.POST, instance=repo)
         if form.is_valid():
@@ -138,7 +137,7 @@ def create_repository(request):
             return redirect("single_repository", repo.id)
     else:
         form = RepositoryForm(instance=repo)
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
 def get_repo_issues(request, repository_id):
@@ -169,17 +168,55 @@ def fork_repo(request, repository_id):
     forked_repo.developers.clear()
     forked_repo.lead = request.user
     forked_repo.save()
+    branch = Branch.objects.get(name="main", repository=repo)
+    commits = Commit.objects.filter(branch=branch)
+    branch.id = None
+    branch.repository = forked_repo
+    branch.save()
+    for commit in commits:
+        commit.id = None
+        commit.branch = branch
+        commit.save()
+    default_branch = DefaultBranch(branch=branch, repository=forked_repo)
+    default_branch.save()
     return redirect("single_repository", repository_id=forked_repo.id)
 
 
 @login_required()
 def watch_repo(request, repository_id):
-    pass
+    repo = get_object_or_404(Repository, id=repository_id)
+    if (repo.private == RepositoryState.PRIVATE) and (
+        request.user not in repo.developers.all()
+    ):
+        raise Http404("Resource not found")
+    Watch.objects.get_or_create(repository=repo, user=request.user)
+    return redirect("watched_repos")
+
+
+@login_required
+def get_watched_repos(request):
+    watched = Watch.objects.filter(user=request.user).prefetch_related("repository")
+    for watch in watched:
+        branches = Branch.objects.filter(repository=watch.repository)
+        watch.repository.branches = branches
+        for branch in branches:
+            branch.commits = Commit.objects.filter(branch=branch)
+    return render(request, "watched_repos.html", {"watched": watched})
+
+
+@login_required()
+def unwatch_repo(request, repository_id):
+    repo = get_object_or_404(Repository, id=repository_id)
+    watch = Watch.objects.get(repository=repo, user=request.user)
+    watch.delete()
+    return redirect("watched_repos")
 
 
 @login_required
 def create_branch(request, repository_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if not request.user in repo.developers.all():
+        return HttpResponseForbidden("No access")
     branch = Branch(repository=repo)
     branches = Branch.objects.filter(repository=repo)
     if request.method == "POST":
@@ -189,10 +226,6 @@ def create_branch(request, repository_id):
             instance=branch,
         )
         if form.is_valid():
-            if Branch.objects.filter(
-                repository=repo, name=form.cleaned_data["name"]
-            ).exists():
-                return HttpResponse("Branch with same name already exists", status=403)
             target_branch = form.save()
             add_commits_from_branch(form.cleaned_data["from_branch"], target_branch)
             return redirect("single_repository", repository_id=repository_id)
@@ -201,7 +234,7 @@ def create_branch(request, repository_id):
             branches=branches,
             instance=branch,
         )
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
 def add_commits_from_branch(source_branch, target_branch):
@@ -215,10 +248,9 @@ def add_commits_from_branch(source_branch, target_branch):
 
 @login_required
 def select_default_branch(request, repository_id):
-    repo = get_object_or_404(Repository, id=repository_id)
-    default_branch = DefaultBranch.objects.filter(repository=repo).first()
+    repo = get_object_or_404(Repository, id=repository_id, lead=request.user)
+    default_branch = DefaultBranch.objects.get(repository=repo)
     branches = Branch.objects.filter(repository=repo)
-    print(branches)
     if request.method == "POST":
         form = DefaultBranchForm(
             request.POST,
@@ -233,7 +265,7 @@ def select_default_branch(request, repository_id):
             branches=branches,
             instance=default_branch,
         )
-        return render(request, "create_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
 @login_required
@@ -305,6 +337,8 @@ def can_merge_pr(pull_request):
 @login_required
 def merge_pr(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if not request.user in repo.developers.all():
+        return HttpResponseForbidden("No access")
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
     can_merge, commits_to_add = can_merge_pr(pull_request)
     if not can_merge:
@@ -318,11 +352,15 @@ def merge_pr(request, repository_id, pull_request_id):
     return redirect("single_repository", repository_id=repository_id)
 
 
+@login_required
 def close_pr(request, repository_id, pull_request_id):
     repo = get_object_or_404(Repository, id=repository_id)
+    if not request.user in repo.developers.all():
+        return HttpResponseForbidden("No access")
     pull_request = get_object_or_404(PullRequest, repository=repo, id=pull_request_id)
     pull_request.state = State.CLOSED
     pull_request.save()
+
     return redirect("single_repository", repository_id=repository_id)
 
 

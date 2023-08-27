@@ -76,10 +76,12 @@ class Star(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class Watcher(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    repository = models.ForeignKey(Repository, null=True, on_delete=models.CASCADE)
-    type = models.CharField(max_length=30)
+class Watch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("repository", "user")
 
 
 class Branch(models.Model):
@@ -88,6 +90,9 @@ class Branch(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    class Meta:
+        unique_together = ("name", "repository")
 
 
 class DefaultBranch(models.Model):
@@ -105,7 +110,6 @@ class Commit(models.Model):
     date_time = models.DateTimeField(auto_now=True)
     log_message = models.CharField(max_length=200)
     hash = models.CharField(max_length=200)
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     commiter = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL, related_name="commiter"
@@ -219,7 +223,7 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.created_by} - {self.content}"
+        return f"{self.created_by}:{self.date_time} - {self.content}"
 
 
 class Reaction(models.Model):
@@ -229,11 +233,3 @@ class Reaction(models.Model):
 
     def __str__(self):
         return f"{self.created_by} - {self.code}"
-
-
-# class StateChanged(Event):
-#     new_state = models.ForeignKey(State, on_delete=models.CASCADE)
-#
-#
-# class LabelApplication(Event):
-#     label = models.ForeignKey(Label, on_delete=models.CASCADE)

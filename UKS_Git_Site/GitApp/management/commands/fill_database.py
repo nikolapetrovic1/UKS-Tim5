@@ -3,6 +3,8 @@ from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from ...models import *
 from ...constants import create_default_labels
+from django.core.management.color import no_style
+from django.db import connection
 
 
 class Command(BaseCommand):
@@ -48,22 +50,37 @@ class Command(BaseCommand):
         r1.labels.add(Label.objects.filter(id=2).first())
         # r1.save()
 
-        r2 = Repository(id=2, name="Repo2", lead=user2)
+        r2 = Repository(id=2, name="Repo2", lead=user2, private=RepositoryState.PRIVATE)
         r2.save()
         r2.developers.add(user2)
         r3 = Repository(id=3, name="Repo3", lead=user1)
         r3.save()
         r3.developers.add(user1)
         Branch.objects.all().delete()
-        b1 = Branch(repository=r1, name="main")
-        b2 = Branch(repository=r1, name="develop")
+        b1 = Branch(id=1, repository=r1, name="main")
+        b2 = Branch(id=2, repository=r1, name="develop")
+        b3 = Branch(id=3, repository=r2, name="main")
+        b4 = Branch(id=4, repository=r3, name="main")
         b1.save()
         b2.save()
+        b3.save()
+        b4.save()
 
         DefaultBranch.objects.all().delete()
-        db1 = DefaultBranch(repository=r1, branch=b1)
+        db1 = DefaultBranch(id=1, repository=r1, branch=b1)
+        db2 = DefaultBranch(id=2, repository=r2, branch=b3)
+        db3 = DefaultBranch(id=3, repository=r3, branch=b4)
         db1.save()
-
+        db2.save()
+        db3.save()
+        Commit.objects.all().delete()
+        commit1 = Commit(
+            log_message="feat:init project",
+            hash="1234",
+            commiter=user1,
+            branch=b2,
+        )
+        commit1.save()
         Milestone.objects.all().delete()
         milestone1 = Milestone(
             id=1,
@@ -122,7 +139,7 @@ class Command(BaseCommand):
 
         Star.objects.all().delete()
 
-        star1 = Star(id=1, repository=r1, user=user1)
+        star1 = Star(id=1, repository=r1, user=user2)
         star1.save()
 
         star2 = Star(id=2, repository=r2, user=user1)
@@ -130,4 +147,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self._add_data()
-        # self._add_repositories(t)
+        sequence_sql = connection.ops.sequence_reset_sql(
+            no_style(),
+            [Repository, Milestone, Branch, DefaultBranch, Task, Star],
+        )
+        with connection.cursor() as cursor:
+            for sql in sequence_sql:
+                cursor.execute(sql)

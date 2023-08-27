@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap4",
     "polymorphic",
     "django_bootstrap_icons",
+    "django_htmx",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = 'UKS_Git_Site.urls'

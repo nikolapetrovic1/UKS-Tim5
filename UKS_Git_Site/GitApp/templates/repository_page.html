@@ -7,19 +7,23 @@
     <div class="ml-auto">
       <a href="{% url 'fork_repo' repository.id %}">
         <button class="btn btn-success">Fork</button>
-        {% if request.user.is_authenticated %}
-          {% if starred %}
-            <a href="{% url 'delete_star' starred.id %}">
-              <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
-            </a>
-          {% else %}
-            <a href="{% url 'new_star' repository.id %}">
-              <button class="btn btn-success">{% bs_icon 'star' %}</button>
-            </a>
-          {% endif %}
-
-        {% endif %}
       </a>
+      <a href="{% url 'watch_repo' repository.id %}">
+        <button class="btn btn-success">Watch</button>
+      </a>
+      {% if request.user.is_authenticated %}
+        {% if starred %}
+          <a href="{% url 'delete_star' starred.id %}">
+            <button class="btn btn-success">{% bs_icon 'star-fill' %}</button>
+          </a>
+        {% else %}
+          <a href="{% url 'new_star' repository.id %}">
+            <button class="btn btn-success">{% bs_icon 'star' %}</button>
+          </a>
+        {% endif %}
+
+      {% endif %}
+
     </div>
   </div>
   <div class="row p-1">
@@ -37,6 +41,10 @@
         >{{branch.name}}</option>
       {% endfor %}
     </select>
+    {% if request.user in repository.developers %}
+      <a href="{% url 'create_branch' repository_id=repository.id%}">
+        Create branch </a>
+    {% endif %}
     <div class="ml-auto">
       <p>Stars: {{star_count}}</p>
     </div>
@@ -90,17 +98,19 @@
         aria-selected="false"
       >Milestones</a>
     </li>
-    <li class="nav-item">
-      <a
-        class="nav-link"
-        id="setting-tab"
-        data-toggle="tab"
-        href="#settings"
-        role="tab"
-        aria-controls="settings"
-        aria-selected="false"
-      >Settings</a>
-    </li>
+    {% if request.user == repository.lead %}
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          id="setting-tab"
+          data-toggle="tab"
+          href="#settings"
+          role="tab"
+          aria-controls="settings"
+          aria-selected="false"
+        >Settings</a>
+      </li>
+    {% endif %}
   </ul>
   <div class="tab-content" id="myTabContent">
     <div
@@ -116,7 +126,7 @@
       id="issues"
       role="tabpanel"
     >
-      {% include 'issues.html' with issues=issues %}
+      {% include 'partials/search.html' with issues=issues repository_id=repository.id %}
       <a href="{% url 'create_issue' repository_id=repository.id %}">New issue</a>
     </div>
     <div class="tab-pane fade" id="pull_requests" role="tabpanel">
@@ -125,9 +135,13 @@
     </div>
     <div class="tab-pane fade" id="milestones" role="tabpanel">
       {% include 'milestones.html' with milestones=milestones%}
+      <a href="{% url 'create_milestone' repository_id=repository.id%}">
+        Create milestone</a>
     </div>
-    <div class="tab-pane fade" id="settings" role="tabpanel">
-      {% include 'settings.html' with repository=repository %}
-    </div>
+    {% if request.user == repository.lead %}
+      <div class="tab-pane fade" id="settings" role="tabpanel">
+        {% include 'settings.html' with repository=repository %}
+      </div>
+    {% endif %}
   </div>
 {% endblock %}

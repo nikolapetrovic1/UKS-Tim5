@@ -56,17 +56,17 @@ def user_logout(request):
     raise PermissionDenied()
 
 
-def user_register(request, template_name="user_form.html"):
+def user_register(request):
+    user = User()
     if request.method == "POST":
-        form = UserForm(request.POST)
+        form = UserForm(request.POST, instance=user)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Registration successful.")
             return redirect("index")
     else:
-        form = UserForm()
-        return render(request, template_name, {"form": form})
+        form = UserForm(instance=user)
+    return render(request, "create_form.html", {"form": form})
 
 
 @login_required
@@ -78,7 +78,7 @@ def user_update(request):
             return redirect("user_profile")
     else:
         form = UserUpdateForm(instance=request.user)
-        return render(request, "user_form.html", {"form": form})
+    return render(request, "create_form.html", {"form": form})
 
 
 @login_required()
